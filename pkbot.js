@@ -91,6 +91,7 @@ bot.on("message", function(message) {
         var args1 = message.content.split();
         message.delete();
         message.channel.send(args1.join("").substring(4));
+    }
 
     if (command === "servers"){
         let guilds = bot.guilds.map((guild) => `${guild.name} (${guild.id})`);
