@@ -92,33 +92,10 @@ bot.on("message", function(message) {
         message.channel.send(args1.join("").substring(4));
     }
 
-    if (command === "sayall") {
-        if(message.author.id !== botowner) {
-            message.reply('this command is only for bot owner!!!');
-            return;
-        }
-            var args2 = message.content.split();
-            message.delete();
-            bot.users.map(u => u.send(args2.join("").substring(7)));
-    }
-
     if (command === "servers"){
         let guilds = bot.guilds.map((guild) => `${guild.name} (${guild.id})`);
         message.channel.send(`I'm in the following guilds:\n${guilds.join ('\n')}`);
     }
-
-/*    if (command === "leaveserver") {
-        if(message.author.id !== botowner) {
-            message.reply('this command is only for bot owner!!!');
-            return;
-        }
-        var args3 = message.content.substring(12);
-        let guild = bot.guilds.get(args3[0]);
-        message.channel.send(args3);
-        message.channel.send(`guild ${guild}`);
-        //guild.leave();
-        message.channel.send('Left guild.');
-    }*/
 
     if (command === "discrim") {
         const discrim = message.content.split(' ')[1];
