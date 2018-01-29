@@ -101,12 +101,12 @@ bot.on("message", function(message) {
     if (command === "discrim") {
         const discrim = message.content.split(' ')[1];
         if (!discrim) return message.reply("oops! I could not find the discriminator that you had given.");
-        if (typeof discrim !== 'integer');
+        if (typeof discrim !== 'integer')
             if (discrim.size < 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
         if (discrim.size > 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
-        let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join('\n');
+        let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join(`#${discrim}\n`);
         if (!members) return message.reply("404 | No members have that discriminator!");
-        message.channel.send(`ICW Discrim Finder\nHere are the discriminators I found\n${members}#${discrim}`);
+        message.channel.send(`ICW Discrim Finder\nHere are the discriminators I found\n\n${members}`);
     }
     /*---------------------------------------------------------------------------------------------------------------------
                                                 INFO COMMANDS
