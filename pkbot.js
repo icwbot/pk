@@ -72,6 +72,7 @@ bot.on("message", function(message) {
 
     if (command === "help") {
         let helpembed = new Discord.RichEmbed()
+        .setColor(0xDE3163)
         .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
         .setDescription(`ICW help Section \nPrefix = ${prefix} \nvolume command is for all users \nmore commands coming soon`)
         .addField("Bot info commands", `invite - (bot invite link)\nbotinfo - (info about the bot) \nuptime - (uptime of the bot)\nservers - (bots servers)`)
@@ -90,7 +91,6 @@ bot.on("message", function(message) {
         var args1 = message.content.split();
         message.delete();
         message.channel.send(args1.join("").substring(4));
-    }
 
     if (command === "servers"){
         let guilds = bot.guilds.map((guild) => `${guild.name} (${guild.id})`);
@@ -109,7 +109,7 @@ bot.on("message", function(message) {
             .setTitle("ICW Discrim Finder")
             .setDescription("Here are the discriminators I found!")
             .addField("Members:", `${members}#${discrim}`)
-            .setColor('#008000');
+            .setColor(0x008000);
         message.channel.send({ embed: disembed });
     }
     /*---------------------------------------------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ bot.on("message", function(message) {
         var infoembed = new Discord.RichEmbed()
         .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
         .setTitle("info")
-        .setColor()
+        .setColor(0x03C03C)
         .setDescription(`this bot for music with volume control and fun`)
         .addField("Devloped by",`PK#1650`,inline = true)
         .addField("Try with", `${prefix}help`,inline = true)
@@ -167,7 +167,7 @@ bot.on("message", function(message) {
         let sicon = message.guild.iconURL;
         var serverinfoembed = new Discord.RichEmbed()
         .setAuthor(message.guild.name + "info", sicon.toString())
-        .setColor()
+        .setColor(0x08E8DE)
         .setDescription(`Since: ${servercreatedat}`)
         .addField ("Server Owner:", `${serverowner}`,inline = true)
         .addField("Owner id:", `${serverownerid}`,inline = true)
