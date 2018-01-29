@@ -81,7 +81,7 @@ bot.on("message", function(message) {
         .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
         .setTimestamp();
         message.author.send({embed: helpembed});
-        message.channel.send("check your dms", {replay: message}).then(sent => sent.delete({timeout: 99999}));
+        message.channel.send("check your dms", {replay: message}).then(sent => sent.delete({timeout: 9}));
     }
     /*----------------------------------------------------------------------------------------------------------------
                                                 UNTIL COMMANDS
@@ -117,6 +117,7 @@ bot.on("message", function(message) {
     ----------------------------------------------------------------------------------------------------------------------*/
     if (command === "invite") {
         message.channel.send("Invite URL: https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot");
+        message.channel.send("please check your dms", {replay: message}).then(sent => sent.delete({timeout: 99999}));
     }
 
     if (command === "botinfo") {
