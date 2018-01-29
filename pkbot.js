@@ -9,6 +9,7 @@ const bot = new Discord.Client();
 const prefix = "$";
 const botChannelName = "icwbot2";
 const botlogchannel = "406504806954565644";
+const botowner = "264470521788366848";
 var fortunes = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely of it", "As I see it, yes", "Most likely", "Outlook good", "Yes", "Signs point to yes", "Reply hazy try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again", "Dont count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"];
 var dispatcher;
 const songQueue = new Map();
@@ -55,13 +56,13 @@ fs.readFile("save.json", function(err, data) {
 
 bot.on("message", function(message) {
 
-	if (message.author.bot) return undefined;
+    if (message.author.bot) return undefined;
 
-	if (message.channel.type == "dm" || message.channel.type == "group") return undefined;
+    if (message.channel.type == "dm" || message.channel.type == "group") return undefined;
 
-	if (!message.content.startsWith(prefix)) return undefined;
+    if (!message.content.startsWith(prefix)) return undefined;
 
-	const serverQueue = songQueue.get(message.guild.id);
+    const serverQueue = songQueue.get(message.guild.id);
 
     const args = message.content.substring(1).split(' ');
     //Get command from message
@@ -70,16 +71,54 @@ bot.on("message", function(message) {
     command = command.slice(prefix.length);
 
     if (command === "help") {
-		message.author.send("```Music commands are: \n   play     (add your music in the queue) \n   pause    (pause the player) \n   resume   (resume your player) \n   skip     (for next song) \n   prev     (for previous song) \n   stop     (stop & clear your player) \n   queue    (check queue list) \n   song     (view now playing) \n   random   (playing random song) ```", { reply: message });	
+        let helpembed = new Discord.RichEmbed()
+        .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
+        .setDescription(`ICW help Section \nPrefix = ${prefix} \nvolume command is for all users \nmore commands coming soon`)
+        .addField("Bot info commands", `invite - (bot invite link)\nbotinfo - (info about the bot) \nuptime - (uptime of the bot)\nservers - (bots servers)`)
+        .addField("until commands",`say - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
+        .addField("Music commands",`play - (for serach and add your song in thre queue) \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \nskip - (for next song) \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \nsong - (view current song) \nrandom - (playing randomly) \n-------------------------------------------------------------------------- \nyou cant use any commands in dms it is stopped by developer during a issue \nsorry for that and be petient`)
+        .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
+        .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+        .setTimestamp();
+        message.author.send({embed: helpembed});
+        message.channel.send("check your dms", {replay: message}).then(sent => sent.delete({timeout: 9999}));
     }
     /*----------------------------------------------------------------------------------------------------------------
-                                                until commands
+                                                UNTIL COMMANDS
     ------------------------------------------------------------------------------------------------------------------*/
     if (command === "say") {
-        var args1 = message.content.split(/[ ]+/);
+        var args1 = message.content.split();
         message.delete();
         message.channel.send(args1.join("").substring(4));
     }
+
+    if (command === "sayall") {
+        if(message.author.id !== botowner) {
+            message.reply('this command is only for bot owner!!!');
+            return;
+        }
+            var args2 = message.content.split();
+            message.delete();
+            bot.users.map(u => u.send(args2.join("").substring(7)));
+    }
+
+    if (command === "servers"){
+        let guilds = bot.guilds.map((guild) => `${guild.name} (${guild.id})`);
+        message.channel.send(`I'm in the following guilds:\n${guilds.join ('\n')}`);
+    }
+
+/*    if (command === "leaveserver") {
+        if(message.author.id !== botowner) {
+            message.reply('this command is only for bot owner!!!');
+            return;
+        }
+        var args3 = message.content.substring(12);
+        let guild = bot.guilds.get(args3[0]);
+        message.channel.send(args3);
+        message.channel.send(`guild ${guild}`);
+        //guild.leave();
+        message.channel.send('Left guild.');
+    }*/
 
     if (command === "discrim") {
         const discrim = message.content.split(' ')[1];
@@ -97,21 +136,32 @@ bot.on("message", function(message) {
         message.channel.send({ embed: disembed });
     }
     /*---------------------------------------------------------------------------------------------------------------------
-    info commands
+                                                INFO COMMANDS
     ----------------------------------------------------------------------------------------------------------------------*/
     if (command === "invite") {
-        message.author.send("Invite URL: https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot");
+        message.chennal.send("Invite URL: https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot");
     }
 
-    if (command === "info") {
+    if (command === "botinfo") {
+        let TextChannels = bot.channels.filter(e => e.type !== 'voice').size;
+        let VoiceChannels = bot.channels.filter(e => e.type === 'voice').size;
         var infoembed = new Discord.RichEmbed()
-            .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
-            .setTitle("info")
-            .setColor()
-            .setDescription(`this bot for music and fun \nDevloped by PK#1650 \nTry with ${prefix}help \nsupport server:\n[link](https://discord.gg/zFDvBay) \nbot invite link:\n[invite](https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot)`)
-            .setThumbnail("https://images-ext-1.discordapp.net/external/v1EV83IWPZ5tg7b5NJwfZO_drseYr7lSlVjCJ_-PncM/https/cdn.discordapp.com/icons/268683615632621568/168a880bdbc1cb0b0858f969b2247aa3.jpg?width=80&height=80")
-            .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
-            .setTimestamp();
+        .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
+        .setTitle("info")
+        .setColor()
+        .setDescription(`this bot for music with volume control and fun`)
+        .addField("Devloped by",`PK#1650`,inline = true)
+        .addField("Try with", `${prefix}help`,inline = true)
+        .addField("Totel Guilds",`${bot.guilds.size}`,inline = true)
+        .addField("Totel Channels",`${bot.channels.size}`,inline =true)
+        .addField("Totel Text Channels",`${TextChannels}`,inline = true)
+        .addField("Totel Voice Channels",`${VoiceChannels}`,inline = true)
+        .addField("Totel Users",`${bot.users.size}`)
+        .addField("support server",`[link](https://discord.gg/zFDvBay)`,inline = true)
+        .addField("bot invite link",`[invite](https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot)`,inline = true)
+        .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
+        .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+        .setTimestamp();
         message.channel.send({ embed: infoembed });
     }
 
@@ -125,8 +175,36 @@ bot.on("message", function(message) {
             .addField('Uptime', `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`);
         message.channel.send({ embed: uptimeembed });
     }
+    if (command === "serverinfo") {
+        let guildTchannels = message.guild.channels.filter(e => e.type !== 'voice').size;
+        let guildVchannels = message.guild.channels.filter(e => e.type === 'voice').size;
+        let serverowner = message.guild.owner.user.tag;
+        let serverownerid = message.guild.owner.id;
+        let servermembers =message.guild.memberCount;
+        let serveronlinemembers = message.guild.members.filter(m => m.user.presence.status !== "offline").size;
+        let serveroflinemembers = message.guild.members.filter(m => m.user.presence.status === "offline").size;
+        let serverroles = message.guild.roles.size;
+        let serverregion = message.guild.region;
+        let servercreatedat = message.guild.createdAt;
+        let sicon = message.guild.iconURL;
+        var serverinfoembed = new Discord.RichEmbed()
+        .setAuthor(message.guild.name + "info", sicon.toString())
+        .setColor()
+        .setDescription(`Since: ${servercreatedat}`)
+        .addField ("Server Owner:", `${serverowner}`,inline = true)
+        .addField("Owner id:", `${serverownerid}`,inline = true)
+        .addField("Members:", `${serveronlinemembers}/${servermembers}`,inline = true)
+        .addField("Totel Roles:", `${serverroles}`,inline = true)
+        .addField("Text channel:", `${guildTchannels}`,inline = true)
+        .addField("Voice channels:", `${guildVchannels}`,inline = true)
+        .addField("Server Region:", `${serverregion}`)
+        .setThumbnail(`${sicon}`)
+        .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+        .setTimestamp();
+        message.channel.send({embed: serverinfoembed});
+    }
     /*------------------------------------------------------------------------------------------
-    music commands
+                                            MUSIC COMMANDS
     -------------------------------------------------------------------------------------------*/
     if (command === "play") {
         if (message.member.voiceChannel !== undefined) {
