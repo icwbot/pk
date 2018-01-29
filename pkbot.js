@@ -97,21 +97,16 @@ bot.on("message", function(message) {
         let guilds = bot.guilds.map((guild) => `${guild.name} (${guild.id})`);
         message.channel.send(`I'm in the following guilds:\n${guilds.join ('\n')}`);
     }
-
+    
     if (command === "discrim") {
         const discrim = message.content.split(' ')[1];
         if (!discrim) return message.reply("oops! I could not find the discriminator that you had given.");
-        if (typeof discrim !== 'integer')
+        if (typeof discrim !== 'integer');
             if (discrim.size < 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
         if (discrim.size > 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
         let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join('\n');
         if (!members) return message.reply("404 | No members have that discriminator!");
-        let disembed = new Discord.RichEmbed()
-            .setTitle("ICW Discrim Finder")
-            .setDescription("Here are the discriminators I found!")
-            .addField("Members:", `${members}#${discrim}`)
-            .setColor(0x008000);
-        message.channel.send({ embed: disembed });
+        message.channel.send(`ICW Discrim Finder\nHere are the discriminators I found\n${members}#${discrim}`);
     }
     /*---------------------------------------------------------------------------------------------------------------------
                                                 INFO COMMANDS
