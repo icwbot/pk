@@ -1,4 +1,5 @@
 require("dotenv").config();
+const request = require('request');
 const Discord = require("discord.js");
 const ytdl = require("ytdl-core");
 const fs = require("fs");
@@ -10,6 +11,7 @@ const prefix = "$";
 const botChannelName = "icwbot2";
 const botlogchannel = "406504806954565644";
 const botowner = "264470521788366848";
+const owmkey = process.env.KEY_WEATHER;
 var fortunes = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely of it", "As I see it, yes", "Most likely", "Outlook good", "Yes", "Signs point to yes", "Reply hazy try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again", "Dont count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"];
 var dispatcher;
 const songQueue = new Map();
