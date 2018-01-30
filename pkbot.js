@@ -19,6 +19,8 @@ var previousSongIndex = 0;
 var shuffle = false;
 var autoremove = false;
 const owmkey = process.env.KEY_WEATHER;
+const owmurlnow = 'http://api.openweathermap.org/data/2.5/weather';
+const owmurlweek = 'http://api.openweathermap.org/data/2.5/forecast';
 
 bot.on("ready", function() {
     console.log("Bot ready");
