@@ -11,7 +11,6 @@ const prefix = "$";
 const botChannelName = "icwbot2";
 const botlogchannel = "406504806954565644";
 const botowner = "264470521788366848";
-const owmkey = process.env.KEY_WEATHER;
 var fortunes = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely of it", "As I see it, yes", "Most likely", "Outlook good", "Yes", "Signs point to yes", "Reply hazy try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again", "Dont count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"];
 var dispatcher;
 const songQueue = new Map();
@@ -19,6 +18,7 @@ var currentSongIndex = 0;
 var previousSongIndex = 0;
 var shuffle = false;
 var autoremove = false;
+const owmkey = process.env.KEY_WEATHER;
 
 bot.on("ready", function() {
     console.log("Bot ready");
@@ -78,7 +78,7 @@ bot.on("message", function(message) {
         .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
         .setDescription(`ICW help Section \nPrefix = ${prefix} \nvolume command is for all users \nmore commands coming soon`)
         .addField("Bot info commands", `invite - (bot invite link)\nbotinfo - (info about the bot) \nuptime - (uptime of the bot)\nservers - (bots servers)`)
-        .addField("until commands",`weather - (check your city weather info) \nsay - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
+        .addField("until commands",`say - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
         .addField("Music commands",`play - (for serach and add your song in thre queue) \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \nskip - (for next song) \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \nsong - (view current song) \nrandom - (playing randomly) \n-------------------------------------------------------------------------- \nyou cant use any commands in dms it is stopped by developer during a issue \nsorry for that and be petient`)
         .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
         .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
@@ -95,20 +95,19 @@ bot.on("message", function(message) {
         message.channel.send(args1.join("").substring(4));
     }
 
+    if (command === "sayall") {
+        if(message.author.id !== botowner) {
+            message.reply('this command is only for bot owner!!!');
+            return;
+        }
+            var args2 = message.content.split();
+            message.delete();
+            bot.users.map(u => u.send(args2.join("").substring(7)));
+    }
+
     if (command === "servers"){
         let guilds = bot.guilds.map((guild) => `${guild.name} (${guild.id})`);
         message.channel.send(`I'm in the following guilds:\n${guilds.join ('\n')}`);
-    }
-    
-    if (command === "discrim") {
-        const discrim = message.content.split(' ')[1];
-        if (!discrim) return message.reply("oops! I could not find the discriminator that you had given.");
-        if (typeof discrim !== 'integer')
-            if (discrim.size < 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
-        if (discrim.size > 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
-        let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join(`\n`);
-        if (!members) return message.reply("404 | No members have that discriminator!");
-        message.channel.send(`ICW Discrim Finder\nHere are the discriminators I found\n\n${members}`);
     }
 
     if (command === "weather") {
@@ -149,6 +148,30 @@ bot.on("message", function(message) {
 
         message.channel.send({embed});
         });
+    }
+
+/*    if (command === "leaveserver") {
+        if(message.author.id !== botowner) {
+            message.reply('this command is only for bot owner!!!');
+            return;
+        }
+        var args3 = message.content.substring(12);
+        let guild = bot.guilds.get(args3[0]);
+        message.channel.send(args3);
+        message.channel.send(`guild ${guild}`);
+        //guild.leave();
+        message.channel.send('Left guild.');
+    }*/
+
+    if (command === "discrim") {
+        const discrim = message.content.split(' ')[1];
+        if (!discrim) return message.reply("oops! I could not find the discriminator that you had given.");
+        if (typeof discrim !== 'integer')
+            if (discrim.size < 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
+        if (discrim.size > 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
+        let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join(`\n`);
+        if (!members) return message.reply("404 | No members have that discriminator!");
+        message.channel.send(`\`\`\`ICW Discrim Finder\nI found ${members.size} discriminators.\n\n${members}\`\`\``);
     }
     /*---------------------------------------------------------------------------------------------------------------------
                                                 INFO COMMANDS
