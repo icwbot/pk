@@ -76,7 +76,7 @@ bot.on("message", function(message) {
         .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
         .setDescription(`ICW help Section \nPrefix = ${prefix} \nvolume command is for all users \nmore commands coming soon`)
         .addField("Bot info commands", `invite - (bot invite link)\nbotinfo - (info about the bot) \nuptime - (uptime of the bot)\nservers - (bots servers)`)
-        .addField("until commands",`say - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
+        .addField("until commands",`weather - (check your city weather info) \nsay - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
         .addField("Music commands",`play - (for serach and add your song in thre queue) \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \nskip - (for next song) \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \nsong - (view current song) \nrandom - (playing randomly) \n-------------------------------------------------------------------------- \nyou cant use any commands in dms it is stopped by developer during a issue \nsorry for that and be petient`)
         .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
         .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
@@ -107,6 +107,46 @@ bot.on("message", function(message) {
         let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join(`\n`);
         if (!members) return message.reply("404 | No members have that discriminator!");
         message.channel.send(`ICW Discrim Finder\nHere are the discriminators I found\n\n${members}`);
+    }
+
+    if (command === "weather") {
+        var arg = message.content.substring(prefix.length).split(" ");
+        if(arg.length <= 1) {return;};
+        var stringdata = "";
+        for(var i = 1; i < arg.length;i++){
+            stringdata += (arg[i] + " ");
+        }
+        request({
+            url: 'http://api.openweathermap.org/data/2.5/forecast?q=' + stringdata + '&APPID=' + owmkey +'&units=metric'
+        }, (error, response, body) => {
+            if(error) return;
+            var data = JSON.parse(body);
+            if(data.cod == "404"){
+                message.channel.send(data.message);
+                return;
+            }
+            var stringdata = data.list[0].dt_txt.substring(0, 10);
+            var embed = new Discord.RichEmbed()
+            .setAuthor("ICW weather info", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
+            .setTitle(data.city.name + " ," + data.city.country + " - " + stringdata + "\n")
+            .setColor()
+            for(var i = 0; i < 6;i++){
+            var stringore = data.list[i].dt_txt.substring(11, data.list[i].dt_txt.length - 3);
+            embed.addField(stringore + " - " + data.list[i].weather[0].description,"Temp: " + data.list[i].main.temp + " / " + "Wind: " + data.list[i].wind.speed,true)
+            .setFooter("Requested by "  + message.author.username.toString(), message.author.avatarURL)
+            .setTimestamp()
+        }
+        for(var i = 0; i < 6;i++){
+            var date = new Date().getHours();
+            var stringore = parseInt(data.list[i].dt_txt.substring(11, 13));
+            if(date >= stringore){
+                embed.setImage('http://openweathermap.org/img/w/' + data.list[i].weather[0].icon + '.png');
+                break;
+            }
+        }
+
+        message.channel.send({embed});
+        });
     }
     /*---------------------------------------------------------------------------------------------------------------------
                                                 INFO COMMANDS
