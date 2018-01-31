@@ -74,10 +74,6 @@ bot.on("message", function(message) {
     //Remove prefix from command string
     command = command.slice(prefix.length);
 
-    if (command === "rc") {
-        message.channel.send(`${randomcolor}`);
-    }
-
     if (command === "help") {
         let helpembed = new Discord.RichEmbed()
         .setColor(randomcolor)
@@ -477,7 +473,7 @@ bot.on("message", function(message) {
         }
         if (serverQueue.songs.length > 0) {
             var songembed = new Discord.RichEmbed()
-                .setColor(0xFF007F)
+                .setColor(randomcolor)
                 .setAuthor(`The current song is \`${serverQueue.songs[currentSongIndex].title}\` 🎧`)
                 .setDescription("link here: " + `[click](${serverQueue.songs[currentSongIndex].url})`)
                 .setThumbnail(`${serverQueue.songs[currentSongIndex].thumbnail}`)
@@ -505,7 +501,7 @@ bot.on("message", function(message) {
             }
             var icon = message.guild.iconURL;
             var queueembed = new Discord.RichEmbed()
-                .setColor(0xFF007F)
+                .setColor(randomcolor)
                 .setAuthor("The song queue of " + message.guild.name + " currently has:", icon.toString())
                 .setDescription(`${songList}`)
                 .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
@@ -537,7 +533,7 @@ bot.on("message", function(message) {
             serverQueue.volume[message.guild.id] = args[1];
             dispatcher.setVolumeLogarithmic(args[1] / 80);
             var setvolembed = new Discord.RichEmbed()
-                .setColor(0xFFEF00)
+                .setColor(randomcolor)
                 .setAuthor("volume controls", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
                 .setDescription(`volume set ${args[1]}%`)
                 .setThumbnail("https://images-ext-1.discordapp.net/external/v1EV83IWPZ5tg7b5NJwfZO_drseYr7lSlVjCJ_-PncM/https/cdn.discordapp.com/icons/268683615632621568/168a880bdbc1cb0b0858f969b2247aa3.jpg?width=80&height=80")
@@ -653,7 +649,7 @@ var playSong = function(message, connection) {
                         //Workaround since above wouldn't work
                         message.member.voiceChannel.leave();
                         var finishembed = new Discord.RichEmbed()
-                            .setColor(randomcolora)
+                            .setColor(randomcolor)
                             .setAuthor("Finished playing because no more song in the queue", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
                             .setDescription("please add more song if you like 🎧")
                             .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
@@ -673,7 +669,7 @@ var playSong = function(message, connection) {
         });
     }
 };
-
+const randomcolor = '0x'+Math.floor(Math.random()*16777215).toString(16);
 var checkForCommand = function(message) {
     if (!message.author.bot && message.content.startsWith(prefix)) {
         var args = message.content.substring(1).split(' ');
