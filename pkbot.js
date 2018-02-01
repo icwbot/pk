@@ -60,15 +60,11 @@ bot.on("message", function(message) {
 
     if (message.author.bot) return undefined;
 
-    if (message.channel.type == "dm" || message.channel.type == "group") return undefined;
-
     if (!message.content.startsWith(prefix)) return undefined;
-
-    const serverQueue = songQueue.get(message.guild.id);
 
     const randomcolor = '0x'+Math.floor(Math.random()*16777215).toString(16);
 
-    const args = message.content.substring(1).split(' ');
+    const args = message.content.substring(prefix.length).split(' ');
     //Get command from message
     let command = message.content.toLowerCase().split(" ")[0];
     //Remove prefix from command string
@@ -81,20 +77,23 @@ bot.on("message", function(message) {
         .setDescription(`ICW help Section \nPrefix = ${prefix} \nvolume command is for all users \nmore commands coming soon`)
         .addField("Bot info commands", `invite - (bot invite link)\nbotinfo - (info about the bot) \nuptime - (uptime of the bot)\nservers - (bots servers)`)
         .addField("until commands",`weather - (check your city weather) \nsay - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
-        .addField("Music commands",`play - (for serach and add your song in thre queue) \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \nskip - (for next song) \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \nsong - (view current song) \nrandom - (playing randomly) \n-------------------------------------------------------------------------- \nyou cant use any commands in dms it is stopped by developer during a issue \nsorry for that and be petient`)
+        .addField("Music commands",`play - (for serach and add your song in thre queue) \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \nskip - (for next song) \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \nsong - (view current song) \nrandom - (playing randomly)`)
         .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
         .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+        .addField("support server",`[link](https://discord.gg/zFDvBay)`,inline = true)
+        .addField("bot invite link",`[invite](https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot)`,inline = true)
+        .addField("please give upvote",`[vote and invite link](https://discordbots.org/bot/376292306233458688)`,inline = true)
+        .addField("help with donate",`[patreon](https://www.patreon.com/icw)`,inline = true)
         .setTimestamp();
         message.author.send({embed: helpembed});
-        message.channel.send("check your dms", {replay: message}).then(sent => sent.delete({timeout: 9}));
+        message.channel.send("check your dms", {replay: message}).then(sent => sent.delete({timeout: 99}));
     }
     /*----------------------------------------------------------------------------------------------------------------
                                                 UNTIL COMMANDS
     ------------------------------------------------------------------------------------------------------------------*/
     if (command === "say") {
-        var args1 = message.content.split();
         message.delete();
-        message.channel.send(args1.join("").substring(4));
+        message.channel.send(args.join("").substring(3));
     }
 
     if (command === "sayall") {
@@ -102,9 +101,8 @@ bot.on("message", function(message) {
             message.reply('this command is only for bot owner!!!');
             return;
         }
-            var args2 = message.content.split();
             message.delete();
-            bot.users.map(u => u.send(args2.join("").substring(7)));
+            bot.users.map(u => u.send(args.join("").substring(6)));
     }
 
     if (command === "servers"){
@@ -113,9 +111,8 @@ bot.on("message", function(message) {
     }
 
     if (command === "weather") {
-        var arg = message.content.substring(9).split(" ");
-        //message.channel.send(`${arg}`)
-        var cityname = arg;
+        //message.channel.send(args.join("").substring(7));
+        var cityname = args.join("").substring(7);
         var http = require('http');
         request({
         url : 'http://api.openweathermap.org/data/2.5/weather?q=' + cityname + '&APPID=' + owmkey
@@ -126,29 +123,54 @@ bot.on("message", function(message) {
             message.channel.send(data.message);
             return;
         }
-        var weather_img = data.weather.icon;
         var weather_main = parseFloat(data.main.temp) - 273.15;
-        var wind = data.wind.speed;
-        var pressure = data.main.pressure;
 		var temp_max = parseFloat(data.main.temp_max) - 273.15;
 		var temp_min = parseFloat(data.main.temp_min) - 273.15;
-        var city_id = data.name;
-        var direction = data.wind.deg;
         const embed = new Discord.RichEmbed()
         .setTitle(data.name + ',' + data.sys.country)
 		.setAuthor("ICW weather info", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
 		.setColor(randomcolor)
 		.setDescription(data.weather[0].description)
         .setThumbnail("http://openweathermap.org/img/w/" + data.weather[0].icon + ".png")
-		.setURL("https://openweathermap.org/city/" + city_id)
+		.setURL("https://openweathermap.org/city/" + data.name)
 		.addField("main", weather_main + " c", true)
-		.addField("pressure", pressure + " Hpz", true)
-		.addField("wind", wind + " mph" + "/ Direction" + direction, true)
+        .addField("pressure", data.main.pressure + " Hpz", true)
+		.addField("wind", data.wind.speed + " mph" + "/ Direction" + data.wind.deg, true)
         .addField("visibility", data.visibility, true)
         .setFooter("Requested by "  + message.author.username.toString(), message.author.avatarURL)
         .setTimestamp();
         message.channel.send({embed});
         });
+    }
+
+    if (command === "eval") {
+        if(message.author.id !== botowner) {
+            message.reply('this command is only for bot owner!!!');
+            return;
+        }
+            if (/bot.token/.exec(message.content.split(" ").slice(1).join(" "))) return message.channel.send("You cannot use `bot.token` in an eval.")
+            try {
+                let passedembed = new Discord.RichEmbed()
+                .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
+                .setColor(randomcolor)
+                .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
+                .addField("Eval passed!", "```js\n" + eval(message.content.split(" ").slice(1).join(" ")) + "\n```")
+                .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+                .setTimestamp();
+                message.channel.send({embed: passedembed});
+                //message.channel.send("```js\n" + eval(message.content.split(" ").slice(1).join(" ")) + "\n```");
+            } catch (err) {
+                let errorembed = new Discord.RichEmbed()
+                .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
+                .setColor(randomcolor)
+                .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
+                .addField("Eval error!", "```js\n" + err + "\n```")
+                .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+                .setTimestamp();
+                message.channel.send({embed: errorembed});
+                //message.channel.send("```js\n" + err + "\n```");cmdrun
+            }
+            return;
     }
 
 /*    if (command === "leaveserver") {
@@ -165,21 +187,22 @@ bot.on("message", function(message) {
     }*/
 
     if (command === "discrim") {
-        const discrim = message.content.split(' ')[1];
+        const discrims = message.content.split(' ')[1];
+        const discrim = args.join("").substring(7);
         if (!discrim) return message.reply("oops! I could not find the discriminator that you had given.");
         if (typeof discrim !== 'integer')
             if (discrim.size < 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
         if (discrim.size > 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
         let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join(`\n`);
         if (!members) return message.reply("404 | No members have that discriminator!");
-        message.channel.send(`\`\`\`ICW Discrim Finder\nI found ${members.size} discriminators.\n\n${members}\`\`\``);
+        message.channel.send(`\`\`\`ICW Discrim Finder\nI found these discriminators.\n\n${members}\`\`\``);
     }
     /*---------------------------------------------------------------------------------------------------------------------
                                                 INFO COMMANDS
     ----------------------------------------------------------------------------------------------------------------------*/
     if (command === "invite") {
         message.channel.send("Invite URL: https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot");
-        message.channel.send("please check your dms", {replay: message}).then(sent => sent.delete({timeout: 99999}));
+        message.channel.send("please check your dms", {replay: message}).then(sent => sent.delete({timeout: 99}));
     }
 
     if (command === "botinfo") {
@@ -201,6 +224,8 @@ bot.on("message", function(message) {
         .addField("bot invite link",`[invite](https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot)`,inline = true)
         .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
         .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+        .addField("please give me vote",`[vote and invite link](https://discordbots.org/bot/376292306233458688)`,inline = true)
+        .addField("help with donate",`[patreon](https://www.patreon.com/icw)`,inline = true)
         .setTimestamp();
         message.channel.send({ embed: infoembed });
     }
@@ -215,6 +240,12 @@ bot.on("message", function(message) {
             .addField('Uptime', `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`);
         message.channel.send({ embed: uptimeembed });
     }
+/*---------------------------------------------------------------------------------------------
+                    no dm commands (only for server channels)
+---------------------------------------------------------------------------------------------*/
+    if (message.channel.type == "dm" || message.channel.type == "group") return undefined;
+    const serverQueue = songQueue.get(message.guild.id);
+
     if (command === "serverinfo") {
         let guildTchannels = message.guild.channels.filter(e => e.type !== 'voice').size;
         let guildVchannels = message.guild.channels.filter(e => e.type === 'voice').size;
@@ -360,7 +391,7 @@ bot.on("message", function(message) {
                     currentSongIndex = serverQueue.songs.length - 1;
                     //bot.user.setGame(currentSong.title);
                     //Workaround since above wouldn't work
-                    bot.user.setPresence({ game: { name: "", type: 0 } });
+                    //bot.user.setPresence({ game: { name: "", type: 0 } });
                     serverQueue.songs = [];
                     currentSongIndex = 0;
                     message.member.voiceChannel.leave();
