@@ -67,9 +67,8 @@ bot.on('message', message => {
             clbot.write(message.content, (response) => {
                 message.channel.startTyping();
                 //setTimeout(() => {
-                    message.channel.send(response.message);
-		    message.channel.send("test");
-                    message.channel.stopTyping();
+                message.channel.send(response.message);
+                message.channel.stopTyping();
                 //}, Math.random() * (1 - 3) + 1 * 600);
             });
         });
