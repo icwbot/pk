@@ -10,6 +10,7 @@ const bot = new Discord.Client();
 const prefix = "$";
 const botChannelName = "icwbot2";
 const botlogchannel = "406504806954565644";
+const botmlogchannel = "409055298158985216";
 const botowner = "264470521788366848";
 var fortunes = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely of it", "As I see it, yes", "Most likely", "Outlook good", "Yes", "Signs point to yes", "Reply hazy try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again", "Dont count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"];
 var dispatcher;
@@ -19,6 +20,8 @@ var previousSongIndex = 0;
 var shuffle = false;
 var autoremove = false;
 const owmkey = process.env.KEY_WEATHER;
+const Cleverbot = require('cleverbot-node');
+const clbot = new Cleverbot;
 
 bot.on("ready", function() {
     console.log("Bot ready");
@@ -39,7 +42,6 @@ bot.login(process.env.BOTTOKEN).then(function() {
     bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.users.size} Users`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
     bot.channels.get(botlogchannel).send("bot logged in");
 }).catch(console.log);
-//bot.login(config.token);
 
 
 fs.readFile("save.json", function(err, data) {
@@ -56,7 +58,26 @@ fs.readFile("save.json", function(err, data) {
     }
 });
 
+bot.on('message', message => {
+    if (message.author.bot) return undefined;
+    if (message.channel.type == "dm" || message.channel.type == "group") return undefined;
+    if (message.content.startsWith(`<@${bot.user.id}>`) || message.content.startsWith(`icw`)) {
+        clbot.configure({botapi: process.env.CLEVERBOT_KEY});
+        Cleverbot.prepare(() => {
+            clbot.write(message.content, (response) => {
+                message.channel.startTyping();
+                //setTimeout(() => {
+                    message.channel.send(response.message);
+                    message.channel.stopTyping();
+                //}, Math.random() * (1 - 3) + 1 * 600);
+            });
+        });
+        return;
+    }
+});
+
 bot.on("message", function(message) {
+    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.users.size} Users`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
 
     if (message.author.bot) return undefined;
 
@@ -76,7 +97,7 @@ bot.on("message", function(message) {
         .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
         .setDescription(`ICW help Section \nPrefix = ${prefix} \nvolume command is for all users \nmore commands coming soon`)
         .addField("Bot info commands", `invite - (bot invite link)\nbotinfo - (info about the bot) \nuptime - (uptime of the bot)\nservers - (bots servers)`)
-        .addField("until commands",`weather - (check your city weather) \nsay - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
+        .addField("until commands",`cleverbot - (talk with bot with mention or icw \`\`example - icw hi\`\`) \nweather - (check your city weather) \nsay - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
         .addField("Music commands",`play - (for serach and add your song in thre queue) \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \nskip - (for next song) \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \nsong - (view current song) \nrandom - (playing randomly)`)
         .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
         .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
@@ -86,7 +107,7 @@ bot.on("message", function(message) {
         .addField("help with donate",`[patreon](https://www.patreon.com/icw)`,inline = true)
         .setTimestamp();
         message.author.send({embed: helpembed});
-        message.channel.send("check your dms", {replay: message}).then(sent => sent.delete({timeout: 99}));
+        message.channel.send("check your dms", {replay: message}).then(sent => sent.delete({timeout: 9999}));
     }
     /*----------------------------------------------------------------------------------------------------------------
                                                 UNTIL COMMANDS
@@ -103,6 +124,15 @@ bot.on("message", function(message) {
         }
             message.delete();
             bot.users.map(u => u.send(args.join("").substring(6)));
+    }
+
+    if (command === "us") {
+        if(message.author.id !== botowner) {
+            message.reply('this command is only for bot owner!!!');
+            return;
+        }
+        bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.users.size} Users`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
+        message.channel.send("stream updated");
     }
 
     if (command === "servers"){
@@ -148,7 +178,7 @@ bot.on("message", function(message) {
             message.reply('this command is only for bot owner!!!');
             return;
         }
-            if (/bot.token/.exec(message.content.split(" ").slice(1).join(" "))) return message.channel.send("You cannot use `bot.token` in an eval.")
+            if (/bot.token/.exec(message.content.split(" ").slice(1).join(" "))) return message.channel.send("I think im not idiot");
             try {
                 let passedembed = new Discord.RichEmbed()
                 .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
@@ -205,7 +235,7 @@ bot.on("message", function(message) {
         message.channel.send("please check your dms", {replay: message}).then(sent => sent.delete({timeout: 99}));
     }
 
-    if (command === "botinfo") {
+    if (command === "botinfo" || command === "info") {
         let TextChannels = bot.channels.filter(e => e.type !== 'voice').size;
         let VoiceChannels = bot.channels.filter(e => e.type === 'voice').size;
         var infoembed = new Discord.RichEmbed()
@@ -277,7 +307,7 @@ bot.on("message", function(message) {
     /*------------------------------------------------------------------------------------------
                                             MUSIC COMMANDS
     -------------------------------------------------------------------------------------------*/
-    if (command === "play") {
+    if (command === "play" || command === "p" || command === "m p") {
         if (message.member.voiceChannel !== undefined) {
             if (args.length > 0) {
                 var query = "";
@@ -373,7 +403,7 @@ bot.on("message", function(message) {
     }
 
 
-    if (command === "skip") {
+    if (command === "skip" || command === "next") {
         if (message.member.voiceChannel !== undefined) {
             if (!message.guild.me.voiceChannel) {
                 message.channel.send("bot is not in voice channel and nothing to play", { reply: message });
@@ -497,7 +527,7 @@ bot.on("message", function(message) {
         }
     }
 
-    if (command === "song") {
+    if (command === "song" || command === "np") {
         if (!message.guild.me.voiceChannel) {
             message.channel.send("bot is not in voice channel and nothing to play", { reply: message });
             return;
@@ -516,7 +546,7 @@ bot.on("message", function(message) {
         }
     }
 
-    if (command === "queue") {
+    if (command === "queue" || command === "q") {
         if (!message.guild.me.voiceChannel) {
             message.channel.send("bot is not in voice channel and nothing to play", { reply: message });
             return;
@@ -543,7 +573,7 @@ bot.on("message", function(message) {
         }
     }
 
-    if (command === "volume") {
+    if (command === "volume" || command === "sv" || command === "setvolume") {
         if (message.member.voiceChannel !== undefined) {
             if (!message.guild.me.voiceChannel) {
                 message.channel.send("bot is not in voice channel", { reply: message });
@@ -622,7 +652,7 @@ var addSong = function(message, url) {
         if (!bot.voiceConnections.exists("channel", message.member.voiceChannel)) {
             message.member.voiceChannel.join().then(function(connection) {
                 playSong(message, connection);
-            }).catch(console.log);
+            }).catch(); //removed consol log
         }
     }).catch(function(err) {
         message.channel.send(err + "\n\n\n");
@@ -654,13 +684,14 @@ var playSong = function(message, connection) {
             .setFooter("Requested by: " + `${currentSong.user}`, currentSong.usravatar)
             .setTimestamp();
         message.channel.send({ embed: nowplayembed });
+        bot.channels.get(botmlogchannel).send(message.author.tag + ` playing ` + `\`\`${currentSong.title}\`\`` + ` in ` + message.guild.name + ` server`);
         //bot.user.setGame(currentSong.title);
         //Workaround since above wouldn't work
         dispatcher.player.on("warn", console.warn);
         dispatcher.on("warn", console.warn);
         dispatcher.on("error", console.error);
         dispatcher.once("end", function(reason) {
-            bot.channels.get(botlogchannel).send("Song ended because: " + reason);
+            //bot.channels.get(botlogchannel).send("Song ended because: " + reason);
             if (reason === "user" || reason === "Stream is not generating quickly enough.") {
                 if (autoremove) {
                     serverQueue.splice(currentSongIndex, 1);
