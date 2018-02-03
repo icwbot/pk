@@ -68,6 +68,7 @@ bot.on('message', message => {
                 message.channel.startTyping();
                 //setTimeout(() => {
                     message.channel.send(response.message);
+		    message.channel.send("test");
                     message.channel.stopTyping();
                 //}, Math.random() * (1 - 3) + 1 * 600);
             });
