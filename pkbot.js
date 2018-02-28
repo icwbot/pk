@@ -73,9 +73,7 @@ bot.on("message", async(message) => {
     if(command == "gsearch" || command === "google" || command === "g") {
         let args3 = message.content.substring(command.length + 2);
         let searchMessage = await message.reply('Searching... Sec.');
-        let searchUrl = `https://www.google.com/search?q=${encodeURIComponent(args3)}`;
-        message.channel.send(args3);
-        message.channel.send(searchUrl);
+        let searchUrl = `https://www.google.com/search?q=${encodeURIComponent(args3)}`;  
         return snekfetch.get(searchUrl).then((result) => {
             let $ = cheerio.load(result.text);
             let googleData = $('.r').first().find('a').first().attr('href');
