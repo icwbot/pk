@@ -693,7 +693,7 @@ bot.on("message", function(message) {
                 return;
             }
             serverQueue.volume[message.guild.id] = args2;
-            dispatcher.setVolumeLogarithmic(args2 / 75);
+            dispatcher.setVolumeLogarithmic(args2 / 80);
             var setvolembed = new Discord.RichEmbed()
                 .setColor(randomcolor)
                 .setAuthor("volume controls", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
