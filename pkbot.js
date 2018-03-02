@@ -11,6 +11,7 @@ const prefix = "$";
 const botChannelName = "icwbot2";
 const botlogchannel = "406504806954565644";
 const botmlogchannel = "409055298158985216";
+const botbuglogchannel = "418642505509240836";
 const botowner = "264470521788366848";
 var fortunes = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely of it", "As I see it, yes", "Most likely", "Outlook good", "Yes", "Signs point to yes", "Reply hazy try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again", "Dont count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"];
 var dispatcher;
@@ -164,6 +165,7 @@ bot.on("message", function(message) {
             .addField("Music commands", `play - (for serach and add your song in thre queue) \`\`p\`\` \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \`\`sv , setvolume\`\` \nskip - (for next song) \`\`s , next\`\` \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \`\`q , playlist\`\` \nsong - (view current song) \`\`np , nowplaying\`\` \nrandom - (playing randomly)`)
             .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
             .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+            .addField("if you find any bug plz report it with command",`bugreport - (report for any bugs or problams) \`\`bug\`\``)
             .addField("support server", `[link](https://discord.gg/zFDvBay)`, inline = true)
             .addField("bot invite link", `[invite](https://discordapp.com/oauth2/authorize?client_id=376292306233458688&scope=bot)`, inline = true)
             .addField("please give upvote", `[vote and invite link](https://discordbots.org/bot/376292306233458688)`, inline = true)
@@ -189,6 +191,13 @@ bot.on("message", function(message) {
         bot.users.map(u => u.send(args.join("").substring(6)));
     }
 
+    if (command === "bugreport" || command === "bug") {
+        let args2 = args.join("").substring(command.length);
+        if (!args2) return message.channel.send(`***plz add a bug message after command***`);
+        message.channel.send(`***Report sented succesfully thank you***`);
+        bot.channels.get(botbuglogchannel).send(`report by: **${message.author.tag}** from: **${message.guild.name}** (${message.guild.id}) \nbug: ${args2}`);
+    }
+
     if (command === "us") {
         if (message.author.id !== botowner) {
             message.reply('this command is only for bot owner!!!');
@@ -200,7 +209,7 @@ bot.on("message", function(message) {
 
     if (command === "servers") {
         let guilds = bot.guilds.map((guild) => `**${guild.name}** members: ${guild.members.size} id: (${guild.id})`);
-        message.channel.send(`I'm in the following guilds:\n${guilds.join ('\n')}`);
+        message.channel.send(`I'm in the **${bot.guilds.size} guilds**:\n${guilds.join ('\n')}`);
     }
 
     if (command === "weather") {
@@ -334,7 +343,6 @@ bot.on("message", function(message) {
         if (!reason) return message.channel.send("You did not give a reason to kick the user.")
         if(!kickUser.id == message.author.id) return message.channel.send("You cannot kick yourself/!");
         if (!kickUser.kickable) return message.channel.send("my role is either the same or lower than the user you wish to kick.");
-        if (!kickUser.kickable) return message.channel.send("Your role is either the same or lower than the user you wish to kick.");
         kickUser.send(`**You have been kicked from** ${message.guild}. \n**Reason**: ${reason}`);
         try {
             message.guild.member(kickUser).kick();
@@ -358,8 +366,7 @@ bot.on("message", function(message) {
         let reason = args2.join(" ").substring(3);
         if (!reason) return message.channel.send("You did not give a reason to ban the user.")
         if(!banUser.id == message.author.id) return message.channel.send("You cannot ban yourself/!");
-        if (!banUser.banable) return message.channel.send("my role is either the same or lower than the user you wish to ban.");
-        if (!banUser.banable) return message.channel.send("Your role is either the same or lower than the user you wish to ban.");
+        if (!banUser.bannable) return message.channel.send("my role is either the same or lower than the user you wish to ban.");
         kickUser.send(`**You have been baned from** ${message.guild}. \n**Reason**: ${reason}`);
         try {
             message.guild.member(banUser).ban();
@@ -677,174 +684,3 @@ bot.on("message", function(message) {
             if (!message.guild.me.voiceChannel) {
                 message.channel.send("bot is not in voice channel", { reply: message });
                 return;
-            }
-            let args2 = args.join("").substring(command.length);
-            if (args2 > 100) {
-                message.channel.send("Invalid Volume! Please provide a volume from 1 to 100.");
-                return;
-            }
-            if (args2 < 1) {
-                message.channel.send("Invalid Volume! Please provide a volume from 1 to 100.");
-                return;
-            }
-            if (isNaN(args2)) {
-                message.channel.send(args2);
-                message.channel.send(`please provide a valid input. example \`${prefix}volume 100\``, { reply: message });
-                return;
-            }
-            serverQueue.volume[message.guild.id] = args2;
-            dispatcher.setVolumeLogarithmic(args2 / 80);
-            var setvolembed = new Discord.RichEmbed()
-                .setColor(randomcolor)
-                .setAuthor("volume controls", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
-                .setDescription(`volume set ${args2}%`)
-                .setThumbnail("https://images-ext-1.discordapp.net/external/v1EV83IWPZ5tg7b5NJwfZO_drseYr7lSlVjCJ_-PncM/https/cdn.discordapp.com/icons/268683615632621568/168a880bdbc1cb0b0858f969b2247aa3.jpg?width=80&height=80")
-                .setFooter("Changed by: " + message.author.username.toString(), message.author.avatarURL)
-                .setTimestamp();
-            message.channel.send({ embed: setvolembed });
-            bot.channels.get(botmlogchannel).send(`**${message.author.username}** using volume command in **${message.guild.name}** volume: **${args2}**`);
-        } else {
-            message.channel.send("you cant change volume if you are not in voice channel", { reply: message });
-        }
-    }
-});
-
-var addSong = function(message, url) {
-    const serverQueue = songQueue.get(message.guild.id);
-    ytdl.getInfo(url).then(function(info) {
-        var song = {};
-        song.thumbnail = info.thumbnail_url;
-        song.title = info.title;
-        song.url = url;
-        song.user = message.author.username;
-        song.usravatar = message.author.avatarURL;
-
-        //message.channel.send(song.title + " info retrieved successfully");
-        if (!serverQueue) {
-            const queueConstruct = {
-                textChannel: message.channel,
-                connection: null,
-                songs: [],
-                volume: [],
-                playing: true
-            };
-
-            //message.channel.send("Queue construct created successfully.");
-
-            songQueue.set(message.guild.id, queueConstruct);
-
-            //message.channel.send("songQueue set successfully");
-
-            queueConstruct.songs.push(song);
-        }
-        //message.channel.send("queuecontrsuct pushed successfully.");
-        else {
-            var addsongembed = new Discord.RichEmbed()
-                .setColor(randomcolor)
-                .setAuthor(`I have added \`${info.title}\` to the song queue!`, "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
-                .setDescription("link here: " + `[click](${url})`)
-                .setURL(`${url}`)
-                .setThumbnail(`${song.thumbnail}`)
-                .setFooter("Added by: " + message.author.username.toString(), message.author.avatarURL)
-                .setTimestamp();
-            message.channel.send({ embed: addsongembed });
-
-            serverQueue.songs.push(song);
-        }
-        if (!bot.voiceConnections.exists("channel", message.member.voiceChannel)) {
-            message.member.voiceChannel.join().then(function(connection) {
-                playSong(message, connection);
-            }).catch(); //removed consol log
-        }
-    }).catch(function(err) {
-        message.channel.send(err + "\n\n\n");
-        message.channel.send("Sorry I couldn't get info for that song :cry:", { reply: message });
-    });
-};
-
-var playSong = function(message, connection) {
-    const serverQueue = songQueue.get(message.guild.id);
-    if (shuffle) {
-        do {
-            currentSongIndex = Math.floor(Math.random() * serverQueue.songs.length);
-        } while (currentSongIndex === previousSongIndex);
-    }
-
-    var currentSong = serverQueue.songs[currentSongIndex];
-    if (currentSong) {
-        //message.channel.send("currentsong defined correctly");
-        var stream = ytdl(currentSong.url, { "filter": "audioonly" });
-        //message.channel.send("stream defined correctly");
-        dispatcher = connection.playStream(stream, { volume: serverQueue.volume[message.guild.id] / 80 });
-        //message.channel.send("dispatcher defined correctly");
-        var nowplayembed = new Discord.RichEmbed()
-            .setColor(randomcolor)
-            .setAuthor(`Now ${(shuffle) ? "randomly " : ""}playing \`${currentSong.title}\``, "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
-            .setDescription("link here: " + `[click](${currentSong.url})`)
-            .setURL(`${currentSong.url}`)
-            .setThumbnail(`${currentSong.thumbnail}`)
-            .setFooter("Requested by: " + `${currentSong.user}`, currentSong.usravatar)
-            .setTimestamp();
-        message.channel.send({ embed: nowplayembed });
-        bot.channels.get(botmlogchannel).send(`**${message.author.tag}**` + ` playing ` + `\`\`${currentSong.title}\`\`` + ` in ` + `**${message.guild.name}**` + ` server`);
-        //bot.user.setGame(currentSong.title);
-        //Workaround since above wouldn't work
-        dispatcher.player.on("warn", console.warn);
-        dispatcher.on("warn", console.warn);
-        dispatcher.on("error", console.error);
-        dispatcher.once("end", function(reason) {
-            //bot.channels.get(botlogchannel).send("Song ended because: " + reason);
-            if (reason === "user" || reason === "Stream is not generating quickly enough.") {
-                if (autoremove) {
-                    serverQueue.splice(currentSongIndex, 1);
-                    if (serverQueue.songs.length === 0) {
-                        //bot.user.setGame(currentSong.title);
-                        //Workaround since above wouldn't work
-                        message.member.voiceChannel.leave();
-                    } else {
-                        setTimeout(function() {
-                            playSong(message, connection);
-                        }, 500);
-                    }
-                } else {
-                    currentSongIndex++;
-                    if (currentSongIndex >= serverQueue.songs.length && !shuffle) {
-                        //bot.user.setGame(currentSong.title);
-                        //Workaround since above wouldn't work
-                        message.member.voiceChannel.leave();
-                        var finishembed = new Discord.RichEmbed()
-                            .setColor(randomcolor)
-                            .setAuthor("Finished playing because no more song in the queue", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
-                            .setDescription("please add more song if you like 🎧")
-                            .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
-                            .setTimestamp();
-                        message.channel.send({ embed: finishembed });
-                    } else {
-                        setTimeout(function() {
-                            playSong(message, connection);
-                        }, 500);
-                    }
-                }
-            } else if (reason === "prev" || reason === "next" || reason === "goto" || reason === "random") {
-                setTimeout(function() {
-                    playSong(message, connection);
-                }, 500);
-            }
-        });
-    }
-};
-const randomcolor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
-var checkForCommand = function(message) {
-    if (!message.author.bot && message.content.startsWith(prefix)) {
-        var args = message.content.substring(1).split(' ');
-        var command = args.splice(0, 1);
-        try {
-            commands[command].process(message, args);
-        } catch (e) {}
-    }
-};
-
-
-function newFunction() {
-    return queue.message.guild.id;
-}
