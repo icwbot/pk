@@ -1,1 +1,1 @@
-worker: pm2 start pkbot.js --attach
+worker: node pkbot.js
