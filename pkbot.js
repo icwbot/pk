@@ -7,7 +7,7 @@ const google = require("googleapis");
 const youtube = google.youtube("v3");
 //var config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
 const bot = new Discord.Client();
-const prefix = "$";
+const prefix = "##";
 const botChannelName = "icwbot2";
 const botlogchannel = "406504806954565644";
 const botmlogchannel = "409055298158985216";
@@ -1054,5 +1054,13 @@ bot.on("guildCreate", guild => {bot.channels.get(botleavejoinchannel).send(`New 
 bot.on('guildDelete', guild => {bot.channels.get(botleavejoinchannel).send(`Removed from ${guild.name} (id: ${guild.id}). and it was owned by ${guild.owner.user.username} (owner id: ${guild.owner.id}) now im in ${bot.guilds.size} servers`);});
 
 bot.on("error", function (err) {
+    bot.channels.get(boterrorchannel).send(e);
+});
+
+bot.on("warn", function (err) {
+    bot.channels.get(boterrorchannel).send(err);
+});
+
+bot.on("debug", function (err) {
     bot.channels.get(boterrorchannel).send(err);
 });
