@@ -1059,13 +1059,8 @@ bot.on('guildDelete', guild => {bot.channels.get(botleavejoinchannel).send(`Remo
 
 bot.on("warn", function (err) {
     bot.channels.get(boterrorchannel).send(err);
-});
-
-bot.on("debug", function (err) {
-    bot.channels.get(boterrorchannel).send(err);
 });*/
-
 
 bot.on("error", (e) => console.error(e));
 bot.on("warn", (e) => console.warn(e));
-bot.on("debug", (e) => console.info(e));
+//bot.on("debug", (e) => console.info(e));
