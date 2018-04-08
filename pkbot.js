@@ -1053,7 +1053,7 @@ bot.on("guildCreate", guild => {bot.channels.get(botleavejoinchannel).send(`New 
 
 bot.on('guildDelete', guild => {bot.channels.get(botleavejoinchannel).send(`Removed from ${guild.name} (id: ${guild.id}). and it was owned by ${guild.owner.user.username} (owner id: ${guild.owner.id}) now im in ${bot.guilds.size} servers`);});
 
-bot.on("error", function (err) {
+/*bot.on("error", function (err) {
     bot.channels.get(boterrorchannel).send(e);
 });
 
@@ -1063,4 +1063,9 @@ bot.on("warn", function (err) {
 
 bot.on("debug", function (err) {
     bot.channels.get(boterrorchannel).send(err);
-});
+});*/
+
+
+bot.on("error", (e) => console.error(e));
+bot.on("warn", (e) => console.warn(e));
+bot.on("debug", (e) => console.info(e));
