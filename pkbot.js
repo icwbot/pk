@@ -16,7 +16,9 @@ const boterrorchannel = "420955154695585792";
 const botleavejoinchannel = "431829603741466634";
 const botrejectionschannel = "432090416834412545";
 const botowner = "264470521788366848";
-var fortunes = ["It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely of it", "As I see it, yes", "Most likely", "Outlook good", "Yes", "Signs point to yes", "Reply hazy try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again", "Dont count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"];
+const wfortunes = ["Hey {user} keep you`r shoes out of door", "hey {user} show your swag", "be carefull {user} is here! -_-", "{user} make the party awesome", "Hey {user} Take a guitar and enjoy the party", "hey everyone {user} are slide hide your dishes", "let's go {user} for chicken dinner"];
+const wimages = [`https://imgur.com/SOwVnni.png`, `https://imgur.com/RoQ8jml.png`, `https://imgur.com/sn9y9fd.png`, `https://imgur.com/X0XD0x0.png`, `https://imgur.com/zoKuQHp.png`, `https://imgur.com/4aXdiaJ.png`];
+const icwstaff = ["385099687465844736", "278587244443467777", "288961251973791744"];
 var dispatcher;
 const songQueue = new Map();
 var currentSongIndex = 0;
@@ -33,6 +35,9 @@ const cheerio = require('cheerio');
 const snekfetch = require('snekfetch');
 const querystring = require('querystring');
 const firebase = require("firebase");
+const Jimp = require("jimp");
+
+const ord = number => {let or; const num = number.toString(); if (num.endsWith("1")) { or = "st"; } else if (num.endsWith("2")) { or = "nd"; } else if (num.endsWith("3")) { or = "rd"; } else { or = "th"; } return or; };
 
 firebase.initializeApp({
     apiKey: process.env.FB_API_KEY,
@@ -512,16 +517,241 @@ bot.on("message", async(message) => {
     }
 
     if (command === "setprefix") {
-        if (message.author.id !== botowner && !message.member.hasPermission("ADMINISTRATOR")) return message.channel.send(`U don't have permission to do that`);
+        if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
         let arg = args.join("").substring(command.length)
         if (!arg) return message.channel.send(`Please add a prefix after command like \`\`${prefix}setprefix &\`\``);
-        firebase.database().ref('servers/' + message.guild.id).set({
-            guildname: `${message.guild.name}`,
+        firebase.database().ref('servers/' + message.guild.id).update({
+            guildname: message.guild.name,
             guildprefix: arg
         }).catch(function(err) {
             message.channel.send(err + "\n\n\n");
         });
         message.channel.send(`prefix updated ${arg} for ${message.guild.name}`);
+    }
+    const wchannelid = (await db.ref(`servers/${message.guild.id}`).child('wchannelid').once('value')).val();
+    const wtextonoff = (await db.ref(`servers/${message.guild.id}`).child('wtextonoff').once('value')).val();
+    const wleavetextonoff = (await db.ref(`servers/${message.guild.id}`).child('wleavetextonoff').once('value')).val();
+    const wimageonoff = (await db.ref(`servers/${message.guild.id}`).child('wimageonoff').once('value')).val();
+    const wuinfoonoff = (await db.ref(`servers/${message.guild.id}`).child('wuinfoonoff').once('value')).val();
+    const welcomeMstatus = (await db.ref(`servers/${message.guild.id}`).child('welcomeMstatus').once('value')).val();
+    const wm = (await db.ref(`servers/${message.guild.id}`).child('wmessage').once('value')).val();
+    if (command === "welcome") {
+        let arg = args.join().substring(command.length);
+        let ar = arg.slice().trim().split(/ +/g);
+        let c = ar.shift().toLowerCase();
+        if (c === "on") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
+            firebase.database().ref('servers/' + message.guild.id).update({
+                welcomeMstatus: "on", wimageonoff: "on", wtextonoff: "on", wuinfoonoff: "on"
+            }).catch(function(err) {
+                message.channel.send(err + "\n\n\n");
+            });
+            message.channel.send(`welcome message turned **on** for ${message.guild.name} server`)
+        }
+        else if (c === "off") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
+            firebase.database().ref('servers/' + message.guild.id).update({
+                welcomeMstatus: "off"
+            }).catch(function(err) {
+                message.channel.send(err + "\n\n\n");
+            });
+            message.channel.send(`welcome message turned **off** for ${message.guild.name} server`)
+        }
+        else if (c === "use-jointext") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
+            if (wchannelid === null) return message.channel.send(`welcome channel not set please set the channel first with \`\`${prefix}welcome set-channel <#channel>\`\``)
+            if (!wtextonoff) {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wtextonoff: "on"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome join text is now enabled");
+            }
+            if (wtextonoff === "on") {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wtextonoff: "off"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome join text is now disabled");
+            }
+            if (wtextonoff === "off") {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wtextonoff: "on"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome join text is now enabled");
+            }
+        }
+        else if (c === "use-leavetext") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
+            if (wchannelid === null) return message.channel.send(`welcome channel not set please set the channel first with \`\`${prefix}welcome set-channel <#channel>\`\``)
+            if (!wleavetextonoff) {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wleavetextonoff: "on"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("leave text is now enabled");
+            }
+            if (wleavetextonoff === "on") {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wleavetextonoff: "off"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("leave text is now disabled");
+            }
+            if (wleavetextonoff === "off") {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wleavetextonoff: "on"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("leave text is now enabled");
+            }
+        }
+        else if (c === "use-image") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
+            if (wchannelid === null) return message.channel.send(`welcome channel not set please set the channel first with \`\`${prefix}welcome set-channel <#channel>\`\``);
+            if (!wimageonoff) {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wimageonoff: "on"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome image is now enabled");
+            }
+            if (wimageonoff === "on") {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wimageonoff: "off"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome image is now disabled");
+            }
+            if (wimageonoff === "off") {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wimageonoff: "on"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome image is now enabled");
+            }
+        }
+        else if (c === "use-userinfo") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
+            if (wchannelid === null) return message.channel.send(`welcome channel not set please set the channel first with \`\`${prefix}welcome set-channel <#channel>\`\``)
+            if (!wuinfoonoff) {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wuinfoonoff: "on"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome userinfo is now enabled");
+            }
+            if (wuinfoonoff === "on") {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wuinfoonoff: "off"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome userinfo is now disabled");
+            }
+            if (wuinfoonoff === "off") {
+                firebase.database().ref('servers/' + message.guild.id).update({
+                    wuinfoonoff: "on"
+                }).catch(function(err) {
+                    message.channel.send(err + "\n\n\n");
+                });
+                message.channel.send("welcome userinfo is now enabled");
+            }
+        }
+        else if (c === "set-joinmessage") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
+            if (wchannelid === null) return message.channel.send(`welcome channel not set please set the channel first with \`\`${prefix}welcome set-channel <#channel>\`\``);
+            let arg2 = arg.substring(c.length)
+            if (!arg2) return message.channel.send(`please add a welcome message after command like \n\`\`{user} welcome to the ${message.guild.name} server now we have {members} members\`\` \n{user} is welcome member \n{members} is total members of server`)
+            firebase.database().ref('servers/' + message.guild.id).update({
+                wmessage: arg2
+            }).catch(function(err) {
+                message.channel.send(err + "\n\n\n");
+            });
+                message.channel.send(`welcome message set successfully \n${arg2}`)
+        }
+        else if (c === "set-leavemessage") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`);
+            if (wchannelid === null) return message.channel.send(`welcome channel not set please set the channel first with \`\`${prefix}welcome set-channel <#channel>\`\``);
+            let arg2 = arg.substring(c.length)
+            if (!arg2) return message.channel.send(`please add a leave message after command like \n\`\`{user} user is left the server now we are {members} members\`\` \n{user} is welcome member \n{members} is total members of server`)
+            firebase.database().ref('servers/' + message.guild.id).update({
+                lmessage: arg2
+            }).catch(function(err) {
+                message.channel.send(err + "\n\n\n");
+            });
+                message.channel.send(`leave message set successfully \n${arg2}`)
+        }
+        else if (c === "set-channel") {
+            if (message.author.id !== botowner && !message.member.hasPermission("MANAGE_GUILD")) return message.channel.send(`U don't have permission to do that`)
+            let wc = message.mentions.channels.first()
+            if (!wc) return message.channel.send(`please mention a channel after command like \`\`${prefix}setwelcomechannel #general\`\``)
+            firebase.database().ref('servers/' + message.guild.id).update({
+                wchannelid: wc.id
+            }).catch(function(err) {
+                message.channel.send(err + "\n\n\n");
+            });
+            message.channel.send(`welcome channel set succesfully ${wc.name} for ${message.guild.name} server`)
+        } else if (c === "jointest") {
+            let member = message.mentions.members.first()
+            if (!member) return message.channel.send(`Please mentions someone like \`\`${prefix}welcome jointest <@${message.author.tag}>\`\``);
+            const fn = Math.floor(Math.random() * wfortunes.length);const fact = `${wfortunes[fn]}`; const fact2 = `${fact.replace('{user}', member.user.username)}`
+            const rn = Math.floor(Math.random() * wimages.length); const images = `${wimages[rn]}`;
+            let tag = `Welcome ${member.user.tag}`;
+            let m = "to";
+            let u = `you are the ${member.guild.memberCount}${ord(member.guild.memberCount)} user`;
+            let s = member.guild.name;
+            let img = member.user.avatarURL;
+            if (wm === null) {
+                message.channel.send(`${member} welcome to ${member.guild.name} you are the ${member.guild.memberCount} user`);
+            } else {
+                message.channel.send(wm.replace('{user}', member.toString()).replace('{members}', member.guild.memberCount));
+            }
+            Jimp.read(img).then(function(image) {
+                Jimp.read(images).then(function(image2) {
+                    Jimp.loadFont(Jimp.FONT_SANS_32_BLACK).then(function(font) {
+                        image2.print(font, 325 , 220, fact2);
+                        Jimp.loadFont(Jimp.FONT_SANS_64_BLACK).then(function(font) {
+                            image2.print(font, 400, 80, s)
+                            Jimp.loadFont(Jimp.FONT_SANS_64_WHITE).then(function(font) {
+                                image2.print(font, 315, 20, tag);
+                                image2.print(font, 330 , 80, m);
+                                image2.print(font, 330 , 135, u);
+                                image.resize(300, 300);
+                                image2.composite(image, 2, 2);
+                                image2.getBuffer(Jimp.MIME_PNG,
+                                    (error, buffer) => { message.channel.send({files: [{ name: 'welcome.png', attachment: buffer }] }); }); }); }); }); }); });
+        }
+        else {
+            if (wchannelid === null) { wchannel = "Not Set" } else { wchannel = `<#${wchannelid}>` }
+            message.channel.send(`:wave: **ICW WELCOME**
+            \n:black_square_button: | \`\`on/off\`\` welcome switch
+            \n:black_square_button: | \`\`use-image\`\` switch of welcome image
+            \n:black_square_button: | \`\`use-jointext\`\` switch of user join text
+            \n:black_square_button: | \`\`use-leavetext\`\` switch of user leave text
+            \n:black_square_button: | \`\`use-userinfo\`\` switch of userinfo (if user is owner of 200+ members server)
+            \n:black_square_button: | \`\`set-joinmessage <message>\`\` set join message for welcome
+            \n:black_square_button: | \`\`set-leavemessage <message>\`\` set leave message
+            \n:black_square_button: | \`\`set-channel <#channel>\`\` set channel for welcome
+            \n\n:black_square_button: | welcome main switch is **${welcomeMstatus}**
+            \n:black_square_button: | welcome channel is **${wchannel}**
+            \n:black_square_button: | welcome join text switch is **${wtextonoff}**
+            \n:black_square_button: | welcome leave text switch is **${wleavetextonoff}**
+            \n:black_square_button: | welcome userinfo text switch is **${wuinfoonoff}**
+            \n:black_square_button: | welcome image switch is **${wimageonoff}**
+            `)
+        }
     }
 
     if (command === "warn") {
@@ -884,13 +1114,17 @@ bot.on("message", async(message) => {
                     songList += `\`${i + 1}. ${serverQueue.songs[i].title}\`\n`;
                 }
             }
-            var queueembed = new Discord.RichEmbed()
-                .setColor(randomcolor)
-                .setAuthor("The song queue of " + message.guild.name + " currently has:", message.guild.iconURL)
-                .setDescription(`${songList}`)
-                .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
-                .setTimestamp();
-            message.channel.send({ embed: queueembed });
+            if (songList.length < 1950) {
+                var queueembed = new Discord.RichEmbed()
+                    .setColor(randomcolor)
+                    .setAuthor("The song queue of " + message.guild.name + " currently has:", message.guild.iconURL)
+                    .setDescription(`${songList}`)
+                    .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
+                    .setTimestamp();
+                message.channel.send({ embed: queueembed });
+            } else {
+                message.channel.send(`${songList}`, { split: "\n" });
+            }
         } else {
             message.channel.send("No song is in the queue", { reply: message });
         }
@@ -1049,18 +1283,83 @@ function newFunction() {
     return queue.message.guild.id;
 }
 
+bot.on('guildMemberAdd', async(member) => {
+    const wmstatus = (await db.ref(`servers/${member.guild.id}`).child('welcomeMstatus').once('value')).val();
+    const wtextonoff = (await db.ref(`servers/${member.guild.id}`).child('wtextonoff').once('value')).val();
+    const wimageonoff = (await db.ref(`servers/${member.guild.id}`).child('wimageonoff').once('value')).val();
+    const wuinfoonoff = (await db.ref(`servers/${member.guild.id}`).child('wuinfoonoff').once('value')).val();
+    const wm = (await db.ref(`servers/${member.guild.id}`).child('wmessage').once('value')).val();
+    const wc = (await db.ref(`servers/${member.guild.id}`).child('wchannelid').once('value')).val();
+    const fn = Math.floor(Math.random() * wfortunes.length);const fact = `${wfortunes[fn]}`; const fact2 = `${fact.replace('{user}', member.user.username)}`
+    const rn = Math.floor(Math.random() * wimages.length); const images = `${wimages[rn]}`;
+    const ms = bot.guilds.filter((guild) => guild.ownerID === member.user.id).filter((guild) => guild.memberCount > 200).map((guild) => guild.name);
+    const mm = bot.guilds.filter((guild) => guild.ownerID === member.user.id).filter((guild) => guild.memberCount > 200).map((guild) => guild.memberCount)
+    if (wmstatus === "on") {
+        if (wc === null) return;
+        if (wtextonoff === "on") {
+            if (wm === null) {
+                member.guild.channels.get(wc.toString()).send(`${member} welcome to ${member.guild.name} you are the ${member.guild.memberCount} user`)
+            } else {
+                member.guild.channels.get(wc.toString()).send(wm.replace('{user}', member.toString()).replace('{members}', member.guild.memberCount));
+            }
+        }
+        if (wimageonoff === "on") {
+            let tag = `Welcome ${member.user.tag}`
+            let m = "to"
+            let u = `you are the ${member.guild.memberCount}${ord(member.guild.memberCount)} user`
+            let s = member.guild.name
+            let img = member.user.avatarURL
+            Jimp.read(img).then(function(image) {
+                Jimp.read(images).then(function(image2) {
+                    Jimp.loadFont(Jimp.FONT_SANS_32_BLACK).then(function(font) {
+                        image2.print(font, 315 , 220, fact2);
+                        Jimp.loadFont(Jimp.FONT_SANS_64_BLACK).then(function(font) {
+                            image2.print(font, 400, 80, s)
+                            Jimp.loadFont(Jimp.FONT_SANS_64_WHITE).then(function(font) {
+                                image2.print(font, 325, 20, tag);
+                                image2.print(font, 330 , 80, m);
+                                image2.print(font, 330 , 135, u);
+                                image.resize(300, 300);
+                                image2.composite(image, 2, 2);
+                                image2.getBuffer(Jimp.MIME_PNG,
+                                    (error, buffer) => { member.guild.channels.get(wc.toString()).send({files: [{ name: 'welcome.png', attachment: buffer }] }); }); });}) }) }) })
+        }
+        if (wuinfoonoff === "on") {
+            if (mm == 0) {
+            } else {
+                member.guild.channels.get(wc.toString()).send(`:crown: Owner of ${ms} server with ${mm} members`)
+            }
+            if (member.user.id === botowner) {
+                member.guild.channels.get(wc.toString()).send(`:military_medal: Owner of ICW BOT (me)`)
+            }
+            if (icwstaff.includes(member.user.id)) {
+                member.guild.channels.get(wc.toString()).send(`:medal: Staff member of ICW`)
+            }
+        }
+    } else { return }
+})
+
+bot.on('guildMemberRemove', async(member) => {
+    const wc = (await db.ref(`servers/${member.guild.id}`).child('wchannelid').once('value')).val();
+    const wmstatus = (await db.ref(`servers/${member.guild.id}`).child('welcomeMstatus').once('value')).val();
+    const wleavetextonoff = (await db.ref(`servers/${member.guild.id}`).child('wtextonoff').once('value')).val();
+    const lm = (await db.ref(`servers/${member.guild.id}`).child('lmessage').once('value')).val();
+    if (wmstatus === "on") {
+        if (wc === null) return;
+        if (wleavetextonoff === "on") {
+            if (lm === null) {
+                member.guild.channels.get(wc.toString()).send(`${member.user.tag} is left the server now we are ${member.guild.memberCount} members`)
+            } else {
+                member.guild.channels.get(wc.toString()).send(lm.replace('{user}', member.user.tag.toString()).replace('{members}', member.guild.memberCount));
+            }
+        }
+    } else { return }
+  });
+
 bot.on("guildCreate", guild => {bot.channels.get(botleavejoinchannel).send(`New server joined: ${guild.name} (id: ${guild.id}). This server has ${guild.memberCount} members! and owner is ${guild.owner.user.username} now im in ${bot.guilds.size} servers`);});
 
 bot.on('guildDelete', guild => {bot.channels.get(botleavejoinchannel).send(`Removed from ${guild.name} (id: ${guild.id}). and it was owned by ${guild.owner.user.username} (owner id: ${guild.owner.id}) now im in ${bot.guilds.size} servers`);});
 
-/*bot.on("error", function (err) {
-    bot.channels.get(boterrorchannel).send(e);
-});
-
-bot.on("warn", function (err) {
+bot.on("error", function (err) {
     bot.channels.get(boterrorchannel).send(err);
-});*/
-
-bot.on("error", (e) => console.error(e));
-bot.on("warn", (e) => console.warn(e));
-//bot.on("debug", (e) => console.info(e));
+});
