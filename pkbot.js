@@ -1342,7 +1342,7 @@ bot.on('guildMemberAdd', async(member) => {
 bot.on('guildMemberRemove', async(member) => {
     const wc = (await db.ref(`servers/${member.guild.id}`).child('wchannelid').once('value')).val();
     const wmstatus = (await db.ref(`servers/${member.guild.id}`).child('welcomeMstatus').once('value')).val();
-    const wleavetextonoff = (await db.ref(`servers/${member.guild.id}`).child('wtextonoff').once('value')).val();
+    const wleavetextonoff = (await db.ref(`servers/${member.guild.id}`).child('wleavetextonoff').once('value')).val();
     const lm = (await db.ref(`servers/${member.guild.id}`).child('lmessage').once('value')).val();
     if (wmstatus === "on") {
         if (wc === null) return;
