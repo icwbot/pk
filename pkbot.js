@@ -719,7 +719,7 @@ bot.on("message", async(message) => {
             let to = "to";
             let u = `you are the ${member.guild.memberCount}${ord(member.guild.memberCount)} user`;
             let s = member.guild.name;
-            let img = member.user.avatarURL;
+            let img = member.user.displayAvatarURL;
             if (wm === null) {
                 message.channel.send(`${member} welcome to ${member.guild.name} you are the ${member.guild.memberCount} user`);
             } else {
@@ -1011,8 +1011,8 @@ bot.on("message", async(message) => {
                 return;
             }
             if (serverQueue.songs.length > 0) {
-                let args0 = args.join("").substring(command.length);
-                var index = Number.parseInt(args0[0]);
+                let arg = args.join("").substring(command.length);
+                var index = Number.parseInt(arg);
                 if (Number.isInteger(index)) {
                     previousSongIndex = currentSongIndex;
                     currentSongIndex = index - 1;
@@ -1023,7 +1023,7 @@ bot.on("message", async(message) => {
                     }
                     dispatcher.end("goto");
                 } else {
-                    message.channel.send(`\`${args0[0]}\` is an invalid index`, { reply: message });
+                    message.channel.send(`\`${arg}\` is an invalid index`, { reply: message });
                 }
             } else {
                 message.channel.send("There are no more songs :sob:", { reply: message });
@@ -1317,7 +1317,7 @@ bot.on('guildMemberAdd', async(member) => {
             let to = "to"
             let u = `you are the ${member.guild.memberCount}${ord(member.guild.memberCount)} user`
             let s = member.guild.name
-            let img = member.user.avatarURL
+            let img = member.user.displayAvatarURL
             Jimp.read(img).then(function(image) {
                 Jimp.read(images).then(function(image2) {
                     Jimp.loadFont(Jimp.FONT_SANS_16_BLACK).then(function(font) {
@@ -1341,7 +1341,7 @@ bot.on('guildMemberAdd', async(member) => {
                 member.guild.channels.get(wc.toString()).send(`:crown: Owner of ${ms} server with ${mm} members`)
             }
             if (member.user.id === botowner) {
-                member.guild.channels.get(wc.toString()).send(`:military_medal: Owner of ICW BOT (me)`)
+                member.guild.channels.get(wc.toString()).send(`:military_medal: Owner of ICW BOT`)
             }
             if (icwstaff.includes(member.user.id)) {
                 member.guild.channels.get(wc.toString()).send(`:medal: Staff member of ICW`)
