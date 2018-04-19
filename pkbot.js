@@ -180,7 +180,6 @@ bot.on("message", async(message) => {
             .addField("help with donate", `[patreon](https://www.patreon.com/icw)`, inline = true)
             .setTimestamp();
         message.author.send({ embed: helpembed });
-        message.channel.send("check your dms", { replay: message }).then(sent => sent.delete({ timeout: 9999 }));
     }
 
     if (command === "say") {
@@ -272,12 +271,11 @@ bot.on("message", async(message) => {
         if (discrim.size > 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
         let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join(`\n`);
         if (!members) return message.reply("404 | No members have that discriminator!");
-        message.channel.send(`\`\`\`ICW Discrim Finder\nI found these discriminators.\n\n${members}\`\`\``);
+        message.channel.send(`\`\`\`ICW Discrim Finder\nI found these discriminators.\n\n${members}#${discrim}\`\`\``, { split: "\n" });
     }
 
     if (command === "invite") {
         message.channel.send("Invite URL: https://discordapp.com/oauth2/authorize?client_id=376292306233458688&permissions=8&scope=bot");
-        message.channel.send("please check your dms", { replay: message }).then(sent => sent.delete({ timeout: 99 }));
     }
 
     if (command === "botinfo" || command === "info" || command === "botstatus" || command === "status") {
@@ -467,12 +465,11 @@ bot.on("message", async(message) => {
         if (discrim.size > 4) return message.reply("Don't you know that discrims are 4 numbers? -.-");
         let members = bot.users.filter(c => c.discriminator === discrim).map(c => c.username).join(`\n`);
         if (!members) return message.reply("404 | No members have that discriminator!");
-        message.channel.send(`\`\`\`ICW Discrim Finder\nI found these discriminators.\n\n${members}\`\`\``);
+        message.channel.send(`\`\`\`ICW Discrim Finder\nI found these discriminators.\n\n${members}#${discrim}\`\`\``, { split: "\n" });
     }
 
     if (command === "invite") {
         message.channel.send("Invite URL: https://discordapp.com/oauth2/authorize?client_id=376292306233458688&permissions=8&scope=bot");
-        message.channel.send("please check your dms", { replay: message }).then(sent => sent.delete({ timeout: 99 }));
     }
 
     if (command === "botinfo" || command === "info" || command === "botstatus" || command === "status") {
@@ -721,7 +718,7 @@ bot.on("message", async(message) => {
             let s = member.guild.name;
             let img = member.user.displayAvatarURL;
             if (wm === null) {
-                message.channel.send(`${member} welcome to ${member.guild.name} you are the ${member.guild.memberCount} user`);
+                message.channel.send(`${member} welcome to ${member.guild.name} you are the ${member.guild.memberCount}${ord(member.guild.memberCount)} user`);
             } else {
                 message.channel.send(wm.replace('{user}', member.toString()).replace('{members}', member.guild.memberCount));
             }
