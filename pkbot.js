@@ -1396,3 +1396,5 @@ firebase.database().ref('servers/' + message.guild.id).set({ guildname: message.
 bot.on("error", function (err) {
     bot.channels.get(boterrorchannel).send(err);
 });
+bot.on("debug", (e) => console.info(e));
+bot.on("warn", (e) => console.warn(e));
