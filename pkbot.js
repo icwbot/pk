@@ -1206,19 +1206,17 @@ var addSong = function(message, video, voiceChannel, playlist = false) {
         songQueue.set(message.guild.id, queueConstruct);
 
         queueConstruct.songs.push(song);
-    try {
-        if (!bot.voiceConnections.exists("channel", message.member.voiceChannel)) {
-            message.member.voiceChannel.join().then(function(connection) {
-                playSong(message, connection);
-            }).catch(err => bot.channels.get(boterrorchannel).send(`${message.author.username} from ${message.guild.name} play command and error in addsong \n${err}`)); //removed consol log
-        }
-    } catch (error) {
-        message.channel.send(`err ${error}`)
-    }
     } else {
         serverQueue.songs.push(song);
-        if (playlist) return undefined;
         let Discord = require('discord.js');
+        if (playlist) {
+            if (!bot.voiceConnections.exists("channel", message.member.voiceChannel)) {
+                message.member.voiceChannel.join().then(function(connection) {
+                    playSong(message, connection);
+                }).catch(err => bot.channels.get(boterrorchannel).send(`${message.author.username} from ${message.guild.name} play command and error in addsong \n${err}`)); //removed consol log
+            }
+            return
+        } else {
         let embed = new Discord.RichEmbed()
             .setAuthor(`I have added \`${song.title}\` to the song queue!`, "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
             .setDescription("link here: " + `[click](${song.url})`)
@@ -1228,9 +1226,14 @@ var addSong = function(message, video, voiceChannel, playlist = false) {
             .addField("Requested by", song.author, true)
             .setFooter("Added by: " + message.author.username.toString(), message.author.avatarURL)
             .setTimestamp()
-        return message.channel.send({ embed });
+        message.channel.send({ embed });
+        }
     }
-    return undefined;
+        if (!bot.voiceConnections.exists("channel", message.member.voiceChannel)) {
+            message.member.voiceChannel.join().then(function(connection) {
+                playSong(message, connection);
+            }).catch(err => bot.channels.get(boterrorchannel).send(`${message.author.username} from ${message.guild.name} play command and error in addsong \n${err}`)); //removed consol log
+        }
 }
 
 var playSong = function(message, connection) {
