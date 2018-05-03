@@ -61,7 +61,7 @@ bot.on("disconnect", function() {
 
 bot.login(process.env.BOTTOKEN).then(function() {
     console.log("Bot logged in");
-    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.users.size} Users`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
+    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.guilds.size} Guilds`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
     bot.channels.get(botlogchannel).send("bot logged in");
 }).catch(console.log);
 
@@ -136,7 +136,7 @@ bot.on('message', message => {
 });
 
 bot.on("message", async(message) => {
-    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.users.size} Users`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
+    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.guilds.size} Guilds`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
 
     if (message.author.bot) return undefined;
     const randomcolor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
@@ -164,12 +164,12 @@ bot.on("message", async(message) => {
     if (command === "help") {
         let helpembed = new Discord.RichEmbed()
             .setColor(randomcolor)
-            .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
+            .setAuthor("Hi " + message.author.username.toString(), message.author.displayAvatarURL)
             .setDescription(`ICW help Section \nDefault Prefix = ${prefix} \nvolume command is for all users \nmore commands coming soon`)
             .addField("Custom Prefix", `setprefix - (for set the custom prefix for server) \nprefix - (for check the server prefix)`)
             .addField("Bot info commands", `ping - (bot ping) \ninvite - (bot invite link)\nbotinfo - (info about the bot)\`\`info , botstatus\`\` \nuptime - (uptime of the bot)\nservers - (bots servers)`)
             .addField("until commands", `cleverbot - (talk with bot with mention or icw \`\`example - icw hi\`\`) \`\`icw\`\` \ngoogle - (search anything) \`\`gsearch , g , \`\` \nweather - (check your city weather) \nsay - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
-            .addField("Modration command", ` welcome - (welcoming the member) \n warn - (for warning a member) \n kick - (for kick a member) \n ban - (for ban a member)`)
+            .addField("Modration command", ` welcome - (welcoming the member) \n purge (delete multiple messages) \`\`delete\`\`, \`\`prune\`\` \n warn - (for warning a member) \n kick - (for kick a member) \n ban - (for ban a member)`)
             .addField("Music commands", `play - (for serach and add your song in thre queue) \`\`p\`\` \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \`\`sv , setvolume\`\` \nskip - (for next song) \`\`s , next\`\` \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \`\`q , playlist\`\` \nsong - (view current song) \`\`np , nowplaying\`\` \nrandom - (playing randomly)`)
             .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
             .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
@@ -187,28 +187,11 @@ bot.on("message", async(message) => {
         message.channel.send(args.join("").substring(3));
     }
 
-    if (command === "sayall") {
-        if (message.author.id !== botowner) {
-            message.reply('this command is only for bot owner!!!');
-            return;
-        }
-        bot.users.map(u => u.send(args.join("").substring(6)));
-    }
-
     if (command === "bugreport" || command === "bug") {
         let args2 = args.join("").substring(command.length);
         if (!args2) return message.channel.send(`***plz add a bug message after command***`);
         message.channel.send(`***Report sented succesfully thank you***`);
         bot.channels.get(botbuglogchannel).send(`report by: **${message.author.tag}** from: **${message.guild.name}** (${message.guild.id}) \nbug: ${args2}`);
-    }
-
-    if (command === "us") {
-        if (message.author.id !== botowner) {
-            message.reply('this command is only for bot owner!!!');
-            return;
-        }
-        bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.users.size} Users`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
-        message.channel.send("stream updated");
     }
 
     if (command === "servers") {
@@ -242,7 +225,7 @@ bot.on("message", async(message) => {
                 .addField("pressure", data.main.pressure + " Hpz", true)
                 .addField("wind", data.wind.speed + " mph" + "/ Direction" + data.wind.deg, true)
                 .addField("visibility", data.visibility, true)
-                .setFooter("Requested by " + message.author.username.toString(), message.author.avatarURL)
+                .setFooter("Requested by " + message.author.username.toString(), message.author.displayAvatarURL)
                 .setTimestamp();
             message.channel.send({ embed });
         });
@@ -282,7 +265,7 @@ bot.on("message", async(message) => {
         let TextChannels = bot.channels.filter(e => e.type !== 'voice').size;
         let VoiceChannels = bot.channels.filter(e => e.type === 'voice').size;
         var infoembed = new Discord.RichEmbed()
-            .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
+            .setAuthor("Hi " + message.author.username.toString(), message.author.displayAvatarURL)
             .setTitle("info")
             .setColor(randomcolor)
             .setDescription(`this bot for music with volume control and fun`)
@@ -319,7 +302,7 @@ bot.on("message", async(message) => {
 })
 
 bot.on("message", async(message) => {
-    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.users.size} Users`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
+    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.guilds.size} Guilds`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
 
     if (message.author.bot) return undefined;
     const randomcolor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
@@ -357,12 +340,12 @@ bot.on("message", async(message) => {
     if (command === "help") {
         let helpembed = new Discord.RichEmbed()
             .setColor(randomcolor)
-            .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
+            .setAuthor("Hi " + message.author.username.toString(), message.author.displayAvatarURL)
             .setDescription(`ICW help Section \nDefault Prefix = ${prefix} \nvolume command is for all users \nmore commands coming soon`)
             .addField("Custom Prefix", `setprefix - (for set the custom prefix for server) \nprefix - (for check the server prefix)`)
             .addField("Bot info commands", `ping - (bot ping) \ninvite - (bot invite link)\nbotinfo - (info about the bot)\`\`info , botstatus\`\` \nuptime - (uptime of the bot)\nservers - (bots servers)`)
             .addField("until commands", `cleverbot - (talk with bot with mention or icw \`\`example - icw hi\`\`) \`\`icw\`\` \ngoogle - (search anything) \`\`gsearch , g , \`\` \nweather - (check your city weather) \nsay - (bot saying your message) \ndiscrim - (found any discriminators) \nserverinfo - (info about server)`)
-            .addField("Modration command", ` welcome - (welcoming the member) \n warn - (for warning a member) \n kick - (for kick a member) \n ban - (for ban a member)`)
+            .addField("Modration command", ` welcome - (welcoming the member) \n purge (delete multiple messages) \`\`delete\`\`, \`\`prune\`\` \n warn - (for warning a member) \n kick - (for kick a member) \n ban - (for ban a member)`)
             .addField("Music commands", `play - (for serach and add your song in thre queue) \`\`p\`\` \npause - (pause the player) \nresume - (resume the player) \nvolume - (set your player volume) \`\`sv , setvolume\`\` \nskip - (for next song) \`\`s , next\`\` \nprev - (for previos song) \nstop - (for stop the player) \nqueue - (for check playlist) \`\`q , playlist\`\` \nsong - (view current song) \`\`np , nowplaying\`\` \nrandom - (playing randomly)`)
             .setThumbnail("https://media.discordapp.net/attachments/406099961730564107/407455733689483265/Untitled6.png?width=300&height=300")
             .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
@@ -373,7 +356,7 @@ bot.on("message", async(message) => {
             .addField("help with donate", `[patreon](https://www.patreon.com/icw)`, inline = true)
             .setTimestamp();
         message.author.send({ embed: helpembed });
-        message.channel.send("check your dms", { replay: message }).then(sent => sent.delete({ timeout: 9999 }));
+        message.channel.send("check your dms", { replay: message });
     }
 
     if (command === "say") {
@@ -381,28 +364,11 @@ bot.on("message", async(message) => {
         message.channel.send(args.join("").substring(3));
     }
 
-    if (command === "sayall") {
-        if (message.author.id !== botowner) {
-            message.reply('this command is only for bot owner!!!');
-            return;
-        }
-        bot.users.map(u => u.send(args.join("").substring(6)));
-    }
-
     if (command === "bugreport" || command === "bug") {
         let args2 = args.join("").substring(command.length);
         if (!args2) return message.channel.send(`***plz add a bug message after command***`);
         message.channel.send(`***Report sented succesfully thank you***`);
         bot.channels.get(botbuglogchannel).send(`report by: **${message.author.tag}** from: **${message.guild.name}** (${message.guild.id}) \nbug: ${args2}`);
-    }
-
-    if (command === "us") {
-        if (message.author.id !== botowner) {
-            message.reply('this command is only for bot owner!!!');
-            return;
-        }
-        bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.users.size} Users`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
-        message.channel.send("stream updated");
     }
 
     if (command === "servers") {
@@ -436,7 +402,7 @@ bot.on("message", async(message) => {
                 .addField("pressure", data.main.pressure + " Hpz", true)
                 .addField("wind", data.wind.speed + " mph" + "/ Direction" + data.wind.deg, true)
                 .addField("visibility", data.visibility, true)
-                .setFooter("Requested by " + message.author.username.toString(), message.author.avatarURL)
+                .setFooter("Requested by " + message.author.username.toString(), message.author.displayAvatarURL)
                 .setTimestamp();
             message.channel.send({ embed });
         });
@@ -476,7 +442,7 @@ bot.on("message", async(message) => {
         let TextChannels = bot.channels.filter(e => e.type !== 'voice').size;
         let VoiceChannels = bot.channels.filter(e => e.type === 'voice').size;
         var infoembed = new Discord.RichEmbed()
-            .setAuthor("Hi " + message.author.username.toString(), message.author.avatarURL)
+            .setAuthor("Hi " + message.author.username.toString(), message.author.displayAvatarURL)
             .setTitle("info")
             .setColor(randomcolor)
             .setDescription(`this bot for music with volume control and fun`)
@@ -511,6 +477,16 @@ bot.on("message", async(message) => {
     }
     /*----------------------------------------------------------------------------------------------------------------------------------------------------------*/
     const serverQueue = songQueue.get(message.guild.id);
+
+    if (command === "purge" || command === "prune" || command === "delete" || command === "clear") {
+        let args2 = args.join("").substring(command.length);
+        if (!message.guild.member(bot.user).hasPermission("MANAGE_MESSAGES")) return message.channel.send(`I don't have permission to do that give me manage message permission`);
+        if (!message.member.hasPermission("MANAGE_MESSAGES")) return message.channel.send("Incorrect permissions (You need the manage messages permissions to do this)");
+        if (!args2 || args2 < 2 || args2 > 99 || isNaN(args2)) return message.reply(`Please provide a number after command between 2 and 99 for delete the messages like \`\`${prefix}purge 5\`\``);
+        const fetched = await message.channel.fetchMessages({limit: args2 + 1});
+        message.channel.bulkDelete(fetched).catch(function(error) { message.reply(`Couldn't delete messages because of: ${error}`); });
+        message.channel.send(`***${args2} messages deleted successfully by ${message.author.tag} with purge command***`).then(msg => msg.delete(3000));;
+    }
 
     if (command === "prefix") {
         if (gprefix === null) {
@@ -801,7 +777,7 @@ bot.on("message", async(message) => {
             message.guild.member(kickUser).kick();
             var kickembed = new Discord.RichEmbed()
                 .setColor(randomcolor)
-                .setAuthor("Action by : " + message.author.username.toString(), message.author.avatarURL)
+                .setAuthor("Action by : " + message.author.username.toString(), message.author.displayAvatarURL)
                 .setDescription(`**Action**: Kick \n**Mamber**: ${kickUser.user.tag} (${kickUser.id}) \n**Reason**: ${reason}`)
                 .setTimestamp();
             message.channel.send({ embed: kickembed });
@@ -825,7 +801,7 @@ bot.on("message", async(message) => {
             message.guild.member(banUser).ban();
             var banembed = new Discord.RichEmbed()
                 .setColor(randomcolor)
-                .setAuthor("Action by : " + message.author.username.toString(), message.author.avatarURL)
+                .setAuthor("Action by : " + message.author.username.toString(), message.author.displayAvatarURL)
                 .setDescription(`**Action**: ban \n**Mamber**: ${banUser.user.tag} (${banUser.id}) \n**Reason**: ${reason}`)
                 .setTimestamp();
             message.channel.send({ embed: banembed });
@@ -845,7 +821,7 @@ bot.on("message", async(message) => {
         let serverroles = message.guild.roles.size;
         let serverregion = message.guild.region;
         let servercreatedat = message.guild.createdAt;
-        let sicon = message.guild.iconURL;
+        let sicon = message.guild.iconURL == null ? "https://images-ext-1.discordapp.net/external/v1EV83IWPZ5tg7b5NJwfZO_drseYr7lSlVjCJ_-PncM/https/cdn.discordapp.com/icons/268683615632621568/168a880bdbc1cb0b0858f969b2247aa3.jpg?width=80&height=80" : message.guild.iconURL;
         var serverinfoembed = new Discord.RichEmbed()
             .setAuthor(message.guild.name + "info", sicon)
             .setColor(randomcolor)
@@ -857,7 +833,7 @@ bot.on("message", async(message) => {
             .addField("Text channel:", `${guildTchannels}`, inline = true)
             .addField("Voice channels:", `${guildVchannels}`, inline = true)
             .addField("Server Region:", `${serverregion}`)
-            .setThumbnail(message.guild.iconURL)
+            .setThumbnail(sicon)
             .setFooter("Bot Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
             .setTimestamp();
         message.channel.send({ embed: serverinfoembed });
@@ -1078,7 +1054,7 @@ bot.on("message", async(message) => {
                     .setColor(randomcolor)
                     .setAuthor("Finished playing by stop command", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
                     .setDescription("thanks for using see you soon bye bye 👋")
-                    .setFooter("Stoped by: " + message.author.username.toString(), message.author.avatarURL)
+                    .setFooter("Stoped by: " + message.author.username.toString(), message.author.displayAvatarURL)
                     .setTimestamp();
                 message.channel.send({ embed: stopembed });
             }
@@ -1137,7 +1113,7 @@ bot.on("message", async(message) => {
             if (songList.length < 1950) {
                 var queueembed = new Discord.RichEmbed()
                     .setColor(randomcolor)
-                    .setAuthor("The song queue of " + message.guild.name + " currently has:", message.guild.iconURL)
+                    .setAuthor("The song queue of " + message.guild.name + " currently has:", message.guild.iconURL == null ? "https://images-ext-1.discordapp.net/external/v1EV83IWPZ5tg7b5NJwfZO_drseYr7lSlVjCJ_-PncM/https/cdn.discordapp.com/icons/268683615632621568/168a880bdbc1cb0b0858f969b2247aa3.jpg?width=80&height=80" : message.guild.iconURL)
                     .setDescription(`${songList}`)
                     .setFooter("Developed by: PK#1650 ", "https://cdn.discordapp.com/attachments/399064303170224131/405585474988802058/videotogif_2018.01.24_10.14.40.gif")
                     .setTimestamp();
@@ -1177,7 +1153,7 @@ bot.on("message", async(message) => {
                 .setAuthor("volume controls", "https://cdn.discordapp.com/attachments/398789265900830760/405592021579989003/videotogif_2018.01.24_10.46.57.gif")
                 .setDescription(`volume set ${args2}%`)
                 .setThumbnail("https://images-ext-1.discordapp.net/external/v1EV83IWPZ5tg7b5NJwfZO_drseYr7lSlVjCJ_-PncM/https/cdn.discordapp.com/icons/268683615632621568/168a880bdbc1cb0b0858f969b2247aa3.jpg?width=80&height=80")
-                .setFooter("Changed by: " + message.author.username.toString(), message.author.avatarURL)
+                .setFooter("Changed by: " + message.author.username.toString(), message.author.displayAvatarURL)
                 .setTimestamp();
             message.channel.send({ embed: setvolembed });
             bot.channels.get(botmlogchannel).send(`**${message.author.username}** using volume command in **${message.guild.name}** volume: **${args2}**`);
@@ -1197,7 +1173,7 @@ var addSong = function(message, video, voiceChannel, playlist = false) {
         thumbnail: video.thumbnails.high.url,
         author: video.author = message.author,
         user: message.author.username,
-        usravatar: message.author.avatarURL
+        usravatar: message.author.displayAvatarURL
     };
     if (!serverQueue) {
         const queueConstruct = {
@@ -1229,7 +1205,7 @@ var addSong = function(message, video, voiceChannel, playlist = false) {
                 .setThumbnail(song.thumbnail)
                 .addField("**Length**", song.duration, true)
                 .addField("Requested by", song.author, true)
-                .setFooter("Added by: " + message.author.username.toString(), message.author.avatarURL)
+                .setFooter("Added by: " + message.author.username.toString(), message.author.displayAvatarURL)
                 .setTimestamp()
             message.channel.send({ embed });
         }
@@ -1332,7 +1308,7 @@ bot.on('guildMemberAdd', async(member) => {
     } else {
         days = d + " days ";
     }
-    let h = Math.floor(time / 3600000);
+    let h = Math.floor(time / 3600000 % 24);
     if (h === 0) {
         hours = "";
     } else {
