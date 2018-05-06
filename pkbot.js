@@ -147,7 +147,7 @@ bot.on("message", async(message) => {
     const command = comarg.shift().toLowerCase();
 
     if (command === "setstream" || command === "ss") {
-        let arg2 = args.substring(command.length)
+        let arg2 = args.join().substring(command.length)
         firebase.database().ref(`bot/`).update({
             sstatus: arg2
         }).catch(function(err) {
@@ -335,7 +335,7 @@ bot.on("message", async(message) => {
     const command = comarg.shift().toLowerCase();
 
     if (command === "setstream" || command === "ss") {
-        let arg2 = args.substring(command.length)
+        let arg2 = args.join().substring(command.length)
         firebase.database().ref(`bot/`).update({
             sstatus: arg2
         }).catch(function(err) {
