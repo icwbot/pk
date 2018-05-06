@@ -6,8 +6,7 @@ const fs = require("fs");
 const google = require("googleapis");
 const youtube = google.youtube("v3"); //var config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
 const bot = new Discord.Client();
-const prefix = "$";
-const botChannelName = "icwbot2";
+const prefix = "##";
 const botlogchannel = "406504806954565644";
 const botmlogchannel = "409055298158985216";
 const botbuglogchannel = "418642505509240836";
@@ -61,7 +60,6 @@ bot.on("disconnect", function() {
 
 bot.login(process.env.BOTTOKEN).then(function() {
     console.log("Bot logged in");
-    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.guilds.size} Guilds`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
     bot.channels.get(botlogchannel).send("bot logged in");
 }).catch(console.log);
 
@@ -136,7 +134,8 @@ bot.on('message', message => {
 });
 
 bot.on("message", async(message) => {
-    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.guilds.size} Guilds`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
+    const sstatus = (await db.ref(`bot/`).child('sstatus').once('value')).val();
+    bot.user.setPresence({ status: `streaming`, game: { name: `${sstatus}`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
 
     if (message.author.bot) return undefined;
     const randomcolor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
@@ -146,6 +145,16 @@ bot.on("message", async(message) => {
     args = message.content.substring(prefix.length + 1).split();
     comarg = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = comarg.shift().toLowerCase();
+
+    if (command === "setstream" || command === "ss") {
+        let arg2 = args.substring(command.length)
+        firebase.database().ref(`bot/`).update({
+            sstatus: arg2
+        }).catch(function(err) {
+            message.channel.send(err + "\n\n\n");
+        });
+        message.channel.send(`Stream updated successfully ${arg2}`);
+    }
 
     if (command === "ping") {
         let pingembed = new Discord.RichEmbed().setColor(randomcolor).addField("Pong! Websocket Latency:", `${bot.ping}`);
@@ -302,12 +311,14 @@ bot.on("message", async(message) => {
 })
 
 bot.on("message", async(message) => {
-    bot.user.setPresence({ status: `streaming`, game: { name: `${prefix}help | ${bot.guilds.size} Guilds`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
+    const sstatus = (await db.ref(`bot/`).child('sstatus').once('value')).val();
+    bot.user.setPresence({ status: `streaming`, game: { name: `${sstatus}`, type: `STREAMING`, url: `https://www.twitch.tv/pardeepsingh12365` } });
 
     if (message.author.bot) return undefined;
     const randomcolor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
 
     if (message.channel.type == "dm" || message.channel.type == "group") return undefined;
+
     const gprefix = (await db
         .ref(`servers/${message.guild.id}`)
         .child('guildprefix')
@@ -322,6 +333,16 @@ bot.on("message", async(message) => {
         comarg = message.content.slice(prefix.length).trim().split(/ +/g);
     }
     const command = comarg.shift().toLowerCase();
+
+    if (command === "setstream" || command === "ss") {
+        let arg2 = args.substring(command.length)
+        firebase.database().ref(`bot/`).update({
+            sstatus: arg2
+        }).catch(function(err) {
+            message.channel.send(err + "\n\n\n");
+        });
+        message.channel.send(`Stream updated successfully ${arg2}`);
+    }
 
     if (command === "ping") {
         let pingembed = new Discord.RichEmbed().setColor(randomcolor).addField("Pong! Websocket Latency:", `${bot.ping}`);
@@ -508,6 +529,7 @@ bot.on("message", async(message) => {
         });
         message.channel.send(`prefix updated ${arg} for ${message.guild.name}`);
     }
+
     const wchannelid = (await db.ref(`servers/${message.guild.id}`).child('wchannelid').once('value')).val();
     const wtextonoff = (await db.ref(`servers/${message.guild.id}`).child('wtextonoff').once('value')).val();
     const wleavetextonoff = (await db.ref(`servers/${message.guild.id}`).child('wleavetextonoff').once('value')).val();
